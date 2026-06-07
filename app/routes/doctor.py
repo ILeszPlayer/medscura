@@ -5,8 +5,8 @@ from flask import (
 from flask_login import login_required, current_user
 from datetime import datetime
 from app import db
-from app.models import User, Patient, Doctor, Appointment, MedicalRecord, AuditLog
-from app.forms import DoctorProfileForm, MedicalRecordForm
+from app.models import User, Patient, Doctor, Appointment, MedicalRecord, AuditLog, VitalSign, LabResult
+from app.forms import DoctorProfileForm, MedicalRecordForm, VitalSignForm, LabResultForm
 from app.decorators import role_required, sanitize_params
 from app.utils import secure_save_file, sanitize_text, sanitize_html, log_audit, read_encrypted_file
 
@@ -148,10 +148,20 @@ def view_patient(patient_id):
         patient_id=patient_id, doctor_id=doctor.id
     ).order_by(MedicalRecord.created_at.desc()).all()
 
+    vital_signs = VitalSign.query.filter_by(
+        patient_id=patient.id
+    ).order_by(VitalSign.recorded_at.desc()).limit(10).all()
+
+    lab_results = LabResult.query.filter_by(
+        patient_id=patient.id
+    ).order_by(LabResult.test_date.desc()).limit(20).all()
+
     return render_template('doctor/view_patient.html',
                            patient=patient,
                            appointments=appointments,
-                           records=records)
+                           records=records,
+                           vital_signs=vital_signs,
+                           lab_results=lab_results)
 
 
 @bp.route('/patients/<int:patient_id>/add-record', methods=['GET', 'POST'])
@@ -191,6 +201,73 @@ def add_medical_record(patient_id):
         return redirect(url_for('doctor.view_patient', patient_id=patient_id))
 
     return render_template('doctor/add_record.html', form=form, patient=patient)
+
+
+@bp.route('/patients/<int:patient_id>/vital-signs', methods=['GET', 'POST'])
+@login_required
+@role_required('doctor')
+@sanitize_params
+def add_vital_signs(patient_id):
+    doctor = Doctor.query.filter_by(user_id=current_user.id).first()
+    patient = Patient.query.get_or_404(patient_id)
+
+    form = VitalSignForm()
+    if form.validate_on_submit():
+        vital = VitalSign(
+            patient_id=patient.id,
+            recorded_by_id=current_user.id,
+            blood_pressure_systolic=form.blood_pressure_systolic.data,
+            blood_pressure_diastolic=form.blood_pressure_diastolic.data,
+            heart_rate=form.heart_rate.data,
+            temperature=float(form.temperature.data) if form.temperature.data else None,
+            oxygen_saturation=form.oxygen_saturation.data,
+            weight_kg=float(form.weight_kg.data) if form.weight_kg.data else None,
+            height_cm=float(form.height_cm.data) if form.height_cm.data else None,
+            respiratory_rate=form.respiratory_rate.data,
+            notes=sanitize_text(form.notes.data)
+        )
+        db.session.add(vital)
+        db.session.commit()
+
+        log_audit(current_app._get_current_object(), current_user.id,
+                  'ADD_VITAL_SIGNS', f'Vital signs recorded for patient {patient_id}',
+                  request.remote_addr)
+        flash('Vital signs recorded successfully!', 'success')
+        return redirect(url_for('doctor.view_patient', patient_id=patient_id))
+
+    return render_template('doctor/add_vital_signs.html', form=form, patient=patient)
+
+
+@bp.route('/patients/<int:patient_id>/lab-results', methods=['GET', 'POST'])
+@login_required
+@role_required('doctor')
+@sanitize_params
+def add_lab_result(patient_id):
+    doctor = Doctor.query.filter_by(user_id=current_user.id).first()
+    patient = Patient.query.get_or_404(patient_id)
+
+    form = LabResultForm()
+    if form.validate_on_submit():
+        lab = LabResult(
+            patient_id=patient.id,
+            ordered_by_id=current_user.id,
+            test_name=sanitize_text(form.test_name.data),
+            test_value=sanitize_text(form.test_value.data),
+            reference_range=sanitize_text(form.reference_range.data),
+            unit=sanitize_text(form.unit.data),
+            is_abnormal=form.is_abnormal.data,
+            notes=sanitize_text(form.notes.data)
+        )
+        db.session.add(lab)
+        db.session.commit()
+
+        log_audit(current_app._get_current_object(), current_user.id,
+                  'ADD_LAB_RESULT', f'Lab result added for patient {patient_id}: {form.test_name.data}',
+                  request.remote_addr)
+        flash('Lab result added successfully!', 'success')
+        return redirect(url_for('doctor.view_patient', patient_id=patient_id))
+
+    return render_template('doctor/add_lab_result.html', form=form, patient=patient)
 
 
 @bp.route('/uploads/<filename>')

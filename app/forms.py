@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SelectField, TextAreaField, DateField, TimeField, FileField, BooleanField, HiddenField
+from wtforms import StringField, PasswordField, SelectField, TextAreaField, DateField, TimeField, FileField, BooleanField, HiddenField, IntegerField, DecimalField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError, Optional
 from app.models import User
 import re
@@ -147,3 +147,24 @@ class AdminUserEditForm(FlaskForm):
         ('admin', 'Admin')
     ], validators=[DataRequired()])
     is_active = BooleanField('Active')
+
+
+class VitalSignForm(FlaskForm):
+    blood_pressure_systolic = IntegerField('Systolic BP (mmHg)', validators=[Optional()])
+    blood_pressure_diastolic = IntegerField('Diastolic BP (mmHg)', validators=[Optional()])
+    heart_rate = IntegerField('Heart Rate (bpm)', validators=[Optional()])
+    temperature = DecimalField('Temperature (°C)', validators=[Optional()], places=1)
+    oxygen_saturation = IntegerField('Oxygen SpO2 (%)', validators=[Optional()])
+    weight_kg = DecimalField('Weight (kg)', validators=[Optional()], places=1)
+    height_cm = DecimalField('Height (cm)', validators=[Optional()], places=1)
+    respiratory_rate = IntegerField('Respiratory Rate (/min)', validators=[Optional()])
+    notes = TextAreaField('Notes', validators=[Optional(), Length(max=500)])
+
+
+class LabResultForm(FlaskForm):
+    test_name = StringField('Test Name', validators=[DataRequired(), Length(max=200)])
+    test_value = StringField('Test Value', validators=[DataRequired(), Length(max=100)])
+    reference_range = StringField('Reference Range', validators=[Optional(), Length(max=100)])
+    unit = StringField('Unit', validators=[Optional(), Length(max=50)])
+    is_abnormal = BooleanField('Mark as Abnormal')
+    notes = TextAreaField('Notes', validators=[Optional(), Length(max=500)])

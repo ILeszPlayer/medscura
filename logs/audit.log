@@ -1,3 +1,9 @@
 2026-06-07 21:12:28,135 | INFO | 1 | LOGIN_SUCCESS | User admin logged in | 127.0.0.1
 2026-06-07 21:20:44,987 | INFO | 1 | LOGIN_SUCCESS | User admin logged in | 127.0.0.1
 2026-06-07 21:23:44,223 | INFO | 1 | LOGIN_SUCCESS | User admin logged in | 127.0.0.1
+2026-06-07 21:28:40,868 | INFO | 1 | LOGIN_SUCCESS | User admin logged in | 192.168.1.71
+2026-06-07 21:30:51,322 | INFO | 1 | LOGIN_NEW_IP | Login from new IP: 127.0.0.1 (previous: 192.168.1.71) | 127.0.0.1
+2026-06-07 21:30:51,343 | INFO | 1 | LOGIN_SUCCESS | User admin logged in | 127.0.0.1
+2026-06-07 21:31:03,843 | INFO | anonymous | LOGIN_FAILED | Invalid username/email: testpatient | 127.0.0.1
+2026-06-07 21:32:31,931 | INFO | 1 | LOGIN_SUCCESS | User admin logged in | 127.0.0.1
+2026-06-07 21:33:02,954 | INFO | anonymous | LOGIN_FAILED | Invalid username/email: neil | 127.0.0.1

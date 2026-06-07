@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Add Lab Result{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="fas fa-flask text-success" style="font-size: 3rem;"></i>
+                    <h4 class="mt-2">Add Lab Result</h4>
+                    <p class="text-muted">Patient: <strong>{{ patient.full_name }}</strong></p>
+                </div>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Test Name</label>
+                            {{ form.test_name(class="form-control" + (" is-invalid" if form.test_name.errors else ""), placeholder="e.g. Complete Blood Count") }}
+                            {% for e in form.test_name.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Test Value</label>
+                            {{ form.test_value(class="form-control" + (" is-invalid" if form.test_value.errors else ""), placeholder="e.g. 14.5") }}
+                            {% for e in form.test_value.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Unit</label>
+                            {{ form.unit(class="form-control" + (" is-invalid" if form.unit.errors else ""), placeholder="e.g. g/dL") }}
+                            {% for e in form.unit.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Reference Range</label>
+                            {{ form.reference_range(class="form-control" + (" is-invalid" if form.reference_range.errors else ""), placeholder="e.g. 13.5-17.5") }}
+                            {% for e in form.reference_range.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3 d-flex align-items-end">
+                            <div class="form-check mb-3">
+                                {{ form.is_abnormal(class="form-check-input") }}
+                                <label class="form-check-label">Mark as Abnormal</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Notes</label>
+                        {{ form.notes(class="form-control" + (" is-invalid" if form.notes.errors else ""), rows=2, placeholder="Any additional notes about this lab result") }}
+                        {% for e in form.notes.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-save me-2"></i>Save Lab Result
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Record Vital Signs{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="fas fa-heartbeat text-danger" style="font-size: 3rem;"></i>
+                    <h4 class="mt-2">Record Vital Signs</h4>
+                    <p class="text-muted">Patient: <strong>{{ patient.full_name }}</strong></p>
+                </div>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Systolic BP (mmHg)</label>
+                            {{ form.blood_pressure_systolic(class="form-control" + (" is-invalid" if form.blood_pressure_systolic.errors else ""), placeholder="e.g. 120") }}
+                            {% for e in form.blood_pressure_systolic.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Diastolic BP (mmHg)</label>
+                            {{ form.blood_pressure_diastolic(class="form-control" + (" is-invalid" if form.blood_pressure_diastolic.errors else ""), placeholder="e.g. 80") }}
+                            {% for e in form.blood_pressure_diastolic.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Heart Rate (bpm)</label>
+                            {{ form.heart_rate(class="form-control" + (" is-invalid" if form.heart_rate.errors else ""), placeholder="e.g. 72") }}
+                            {% for e in form.heart_rate.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Temperature (°C)</label>
+                            {{ form.temperature(class="form-control" + (" is-invalid" if form.temperature.errors else ""), placeholder="e.g. 36.5") }}
+                            {% for e in form.temperature.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Oxygen SpO2 (%)</label>
+                            {{ form.oxygen_saturation(class="form-control" + (" is-invalid" if form.oxygen_saturation.errors else ""), placeholder="e.g. 98") }}
+                            {% for e in form.oxygen_saturation.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Respiratory Rate (/min)</label>
+                            {{ form.respiratory_rate(class="form-control" + (" is-invalid" if form.respiratory_rate.errors else ""), placeholder="e.g. 16") }}
+                            {% for e in form.respiratory_rate.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Weight (kg)</label>
+                            {{ form.weight_kg(class="form-control" + (" is-invalid" if form.weight_kg.errors else ""), placeholder="e.g. 70") }}
+                            {% for e in form.weight_kg.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Height (cm)</label>
+                            {{ form.height_cm(class="form-control" + (" is-invalid" if form.height_cm.errors else ""), placeholder="e.g. 170") }}
+                            {% for e in form.height_cm.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Notes</label>
+                        {{ form.notes(class="form-control" + (" is-invalid" if form.notes.errors else ""), rows=2, placeholder="Any additional notes") }}
+                        {% for e in form.notes.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-info btn-lg">
+                            <i class="fas fa-save me-2"></i>Save Vital Signs
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

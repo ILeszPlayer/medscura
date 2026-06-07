@@ -5,7 +5,7 @@ from flask import (
 from flask_login import login_required, current_user
 from datetime import datetime
 from app import db
-from app.models import User, Patient, Doctor, Appointment, MedicalRecord, AuditLog, UserSession
+from app.models import User, Patient, Doctor, Appointment, MedicalRecord, AuditLog, UserSession, VitalSign, LabResult
 from app.forms import PatientProfileForm, AppointmentForm
 from app.decorators import role_required, sanitize_params
 from app.utils import secure_save_file, sanitize_text, log_audit, read_encrypted_file
@@ -32,10 +32,20 @@ def dashboard():
         patient_id=patient.id
     ).order_by(MedicalRecord.created_at.desc()).limit(5).all()
 
+    latest_vitals = VitalSign.query.filter_by(
+        patient_id=patient.id
+    ).order_by(VitalSign.recorded_at.desc()).first()
+
+    recent_labs = LabResult.query.filter_by(
+        patient_id=patient.id
+    ).order_by(LabResult.test_date.desc()).limit(5).all()
+
     return render_template('patient/dashboard.html',
                            patient=patient,
                            upcoming_appointments=upcoming_appointments,
-                           recent_records=recent_records)
+                           recent_records=recent_records,
+                           latest_vitals=latest_vitals,
+                           recent_labs=recent_labs)
 
 
 @bp.route('/profile', methods=['GET', 'POST'])
@@ -67,6 +77,33 @@ def edit_profile():
         return redirect(url_for('patient.dashboard'))
 
     return render_template('patient/profile.html', form=form, patient=patient)
+
+
+@bp.route('/health')
+@login_required
+@role_required('patient')
+def health_dashboard():
+    patient = Patient.query.filter_by(user_id=current_user.id).first()
+    if not patient:
+        return redirect(url_for('patient.edit_profile'))
+
+    vital_signs = VitalSign.query.filter_by(
+        patient_id=patient.id
+    ).order_by(VitalSign.recorded_at.desc()).limit(10).all()
+
+    lab_results = LabResult.query.filter_by(
+        patient_id=patient.id
+    ).order_by(LabResult.test_date.desc()).limit(20).all()
+
+    latest_vitals = VitalSign.query.filter_by(
+        patient_id=patient.id
+    ).order_by(VitalSign.recorded_at.desc()).first()
+
+    return render_template('patient/health.html',
+                           patient=patient,
+                           vital_signs=vital_signs,
+                           lab_results=lab_results,
+                           latest_vitals=latest_vitals)
 
 
 @bp.route('/appointments')

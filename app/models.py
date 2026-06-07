@@ -179,3 +179,97 @@ class SuspiciousIP(db.Model):
 
     def __repr__(self):
         return f'<SuspiciousIP {self.ip_address}>'
+
+
+class Disease(db.Model):
+    __tablename__ = 'diseases'
+
+    id = db.Column(db.Integer, primary_key=True)
+    icd10_code = db.Column(db.String(10), unique=True, nullable=False, index=True)
+    name = db.Column(db.String(300), nullable=False)
+    category = db.Column(db.String(100), nullable=True)
+    description = db.Column(db.Text, nullable=True)
+
+    def __repr__(self):
+        return f'<Disease {self.icd10_code}: {self.name}>'
+
+
+class Medication(db.Model):
+    __tablename__ = 'medications'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False, index=True)
+    generic_name = db.Column(db.String(200), nullable=True)
+    dosage_form = db.Column(db.String(50), nullable=True)
+    strength = db.Column(db.String(50), nullable=True)
+    manufacturer = db.Column(db.String(200), nullable=True)
+    description = db.Column(db.Text, nullable=True)
+
+    def __repr__(self):
+        return f'<Medication {self.name}>'
+
+
+class VitalSign(db.Model):
+    __tablename__ = 'vital_signs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'), nullable=False)
+    recorded_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    blood_pressure_systolic = db.Column(db.Integer, nullable=True)
+    blood_pressure_diastolic = db.Column(db.Integer, nullable=True)
+    heart_rate = db.Column(db.Integer, nullable=True)
+    temperature = db.Column(db.Float, nullable=True)
+    oxygen_saturation = db.Column(db.Integer, nullable=True)
+    weight_kg = db.Column(db.Float, nullable=True)
+    height_cm = db.Column(db.Float, nullable=True)
+    respiratory_rate = db.Column(db.Integer, nullable=True)
+    notes = db.Column(db.Text, nullable=True)
+    recorded_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    patient = db.relationship('Patient', backref=db.backref('vital_signs', lazy=True))
+    recorded_by = db.relationship('User', backref=db.backref('recorded_vitals', lazy=True))
+
+    @property
+    def bmi(self):
+        if self.weight_kg and self.height_cm and self.height_cm > 0:
+            height_m = self.height_cm / 100
+            return round(self.weight_kg / (height_m * height_m), 1)
+        return None
+
+    @property
+    def bmi_category(self):
+        b = self.bmi
+        if b is None:
+            return None
+        if b < 18.5:
+            return 'Underweight'
+        if b < 25:
+            return 'Normal'
+        if b < 30:
+            return 'Overweight'
+        return 'Obese'
+
+    def __repr__(self):
+        return f'<VitalSign {self.id} for patient {self.patient_id}>'
+
+
+class LabResult(db.Model):
+    __tablename__ = 'lab_results'
+
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'), nullable=False)
+    ordered_by_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    test_name = db.Column(db.String(200), nullable=False)
+    test_value = db.Column(db.String(100), nullable=True)
+    reference_range = db.Column(db.String(100), nullable=True)
+    unit = db.Column(db.String(50), nullable=True)
+    is_abnormal = db.Column(db.Boolean, default=False)
+    notes = db.Column(db.Text, nullable=True)
+    test_date = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    patient = db.relationship('Patient', backref=db.backref('lab_results', lazy=True))
+    ordered_by = db.relationship('User', backref=db.backref('ordered_labs', lazy=True))
+
+    def __repr__(self):
+        return f'<LabResult {self.test_name}: {self.test_value} for patient {self.patient_id}>'

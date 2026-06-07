@@ -8,9 +8,17 @@
                 <i class="fas fa-user text-primary me-2"></i>
                 {{ patient.full_name }}
             </h3>
-            <a href="{{ url_for('doctor.add_medical_record', patient_id=patient.id) }}" class="btn btn-primary">
-                <i class="fas fa-notes-medical me-2"></i>Add Medical Record
-            </a>
+            <div>
+                <a href="{{ url_for('doctor.add_vital_signs', patient_id=patient.id) }}" class="btn btn-outline-info me-1">
+                    <i class="fas fa-heartbeat me-1"></i>Vitals
+                </a>
+                <a href="{{ url_for('doctor.add_lab_result', patient_id=patient.id) }}" class="btn btn-outline-success me-1">
+                    <i class="fas fa-flask me-1"></i>Lab
+                </a>
+                <a href="{{ url_for('doctor.add_medical_record', patient_id=patient.id) }}" class="btn btn-primary">
+                    <i class="fas fa-notes-medical me-2"></i>Record
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -95,6 +103,97 @@
                 </div>
                 {% else %}
                 <p class="text-muted text-center py-3">No appointment history</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-heartbeat text-info me-2"></i>Vital Signs</h5>
+                <a href="{{ url_for('doctor.add_vital_signs', patient_id=patient.id) }}" class="btn btn-sm btn-outline-info">
+                    <i class="fas fa-plus me-1"></i>Add
+                </a>
+            </div>
+            <div class="card-body p-0">
+                {% if vital_signs %}
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>BP</th>
+                                <th>HR</th>
+                                <th>Temp</th>
+                                <th>SpO2</th>
+                                <th>BMI</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for v in vital_signs %}
+                            <tr>
+                                <td class="small">{{ v.recorded_at.strftime('%b %d') }}</td>
+                                <td>{{ v.blood_pressure_systolic or '--' }}/{{ v.blood_pressure_diastolic or '--' }}</td>
+                                <td>{{ v.heart_rate or '--' }}</td>
+                                <td>{{ v.temperature or '--' }}</td>
+                                <td>{{ v.oxygen_saturation or '--' }}%</td>
+                                <td>{{ v.bmi or '--' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-3">No vital signs recorded</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-flask text-success me-2"></i>Lab Results</h5>
+                <a href="{{ url_for('doctor.add_lab_result', patient_id=patient.id) }}" class="btn btn-sm btn-outline-success">
+                    <i class="fas fa-plus me-1"></i>Add
+                </a>
+            </div>
+            <div class="card-body p-0">
+                {% if lab_results %}
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Test</th>
+                                <th>Value</th>
+                                <th>Ref</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for lab in lab_results %}
+                            <tr class="{{ 'table-danger' if lab.is_abnormal else '' }}">
+                                <td class="small">{{ lab.test_date.strftime('%b %d') }}</td>
+                                <td>{{ lab.test_name }}</td>
+                                <td class="fw-bold">{{ lab.test_value }}</td>
+                                <td class="small">{{ lab.reference_range or '--' }}</td>
+                                <td>
+                                    {% if lab.is_abnormal %}
+                                    <span class="badge bg-danger">ABN</span>
+                                    {% else %}
+                                    <span class="badge bg-success">N</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-3">No lab results</p>
                 {% endif %}
             </div>
         </div>

@@ -15,6 +15,7 @@ from app.utils import (
     track_suspicious_ip, is_ip_blocked, hash_ip
 )
 from itsdangerous import URLSafeTimedSerializer
+import uuid
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -74,6 +75,17 @@ def login():
                             user.last_login = datetime.utcnow()
                             user.last_login_ip = request.remote_addr
                             db.session.commit()
+                            session_token = uuid.uuid4().hex
+                            user_session = UserSession(
+                                user_id=user.id,
+                                session_token=session_token,
+                                ip_address=request.remote_addr,
+                                user_agent=request.user_agent.string if request.user_agent else None,
+                                is_active=True
+                            )
+                            db.session.add(user_session)
+                            db.session.commit()
+                            session['session_id'] = user_session.id
                             login_user(user, remember=False)
                             log_audit(current_app._get_current_object(), user.id,
                                       'LOGIN_SUCCESS_TRUSTED', 'Login via trusted device (skipped 2FA)',
@@ -99,8 +111,19 @@ def login():
             user.failed_login_attempts = 0
             user.last_login = datetime.utcnow()
             user.last_login_ip = request.remote_addr
+
+            session_token = uuid.uuid4().hex
+            user_session = UserSession(
+                user_id=user.id,
+                session_token=session_token,
+                ip_address=request.remote_addr,
+                user_agent=request.user_agent.string if request.user_agent else None,
+                is_active=True
+            )
+            db.session.add(user_session)
             db.session.commit()
 
+            session['session_id'] = user_session.id
             login_user(user, remember=False)
 
             if user.password_expires_at and user.password_expires_at < datetime.utcnow():
@@ -171,8 +194,19 @@ def verify_2fa():
             user.failed_login_attempts = 0
             user.last_login = datetime.utcnow()
             user.last_login_ip = request.remote_addr
+
+            session_token = uuid.uuid4().hex
+            user_session = UserSession(
+                user_id=user.id,
+                session_token=session_token,
+                ip_address=request.remote_addr,
+                user_agent=request.user_agent.string if request.user_agent else None,
+                is_active=True
+            )
+            db.session.add(user_session)
             db.session.commit()
 
+            session['session_id'] = user_session.id
             login_user(user, remember=False)
             session.pop('2fa_user_id', None)
             session.pop('twofa_attempts', None)
@@ -215,7 +249,7 @@ def verify_2fa():
 @sanitize_params
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('index'))
 
     form = RegistrationForm()
     if form.validate_on_submit():
