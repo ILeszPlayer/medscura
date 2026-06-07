@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Patient Dashboard{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3>
+                <i class="fas fa-user-circle text-primary me-2"></i>
+                Welcome, {{ patient.full_name }}
+            </h3>
+            <a href="{{ url_for('patient.book_appointment') }}" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-2"></i>Book Appointment
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="card bg-primary text-white shadow">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-check fa-2x mb-2"></i>
+                <h5 class="card-title">{{ upcoming_appointments|length }}</h5>
+                <p class="mb-0">Upcoming Appointments</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card bg-success text-white shadow">
+            <div class="card-body text-center">
+                <i class="fas fa-notes-medical fa-2x mb-2"></i>
+                <h5 class="card-title">{{ recent_records|length }}</h5>
+                <p class="mb-0">Medical Records</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card bg-info text-white shadow">
+            <div class="card-body text-center">
+                <i class="fas fa-user-md fa-2x mb-2"></i>
+                <h5 class="card-title">{{ patient.blood_type or 'N/A' }}</h5>
+                <p class="mb-0">Blood Type</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-calendar-alt text-primary me-2"></i>Upcoming Appointments</h5>
+            </div>
+            <div class="card-body">
+                {% if upcoming_appointments %}
+                <div class="list-group list-group-flush">
+                    {% for apt in upcoming_appointments %}
+                    <div class="list-group-item px-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ apt.doctor.full_name }}</strong>
+                                <small class="d-block text-muted">
+                                    <i class="fas fa-calendar me-1"></i>{{ apt.appointment_date.strftime('%b %d, %Y') }}
+                                    <i class="fas fa-clock ms-2 me-1"></i>{{ apt.appointment_time.strftime('%H:%M') }}
+                                </small>
+                            </div>
+                            <span class="badge bg-success">Scheduled</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-calendar-times fa-3x mb-2"></i>
+                    <p>No upcoming appointments</p>
+                    <a href="{{ url_for('patient.book_appointment') }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus me-1"></i>Book Now
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-notes-medical text-success me-2"></i>Recent Records</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_records %}
+                <div class="list-group list-group-flush">
+                    {% for record in recent_records %}
+                    <div class="list-group-item px-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ record.doctor.full_name }}</strong>
+                                <small class="d-block text-muted">
+                                    <i class="fas fa-calendar me-1"></i>{{ record.created_at.strftime('%b %d, %Y') }}
+                                </small>
+                            </div>
+                            {% if record.file_path %}
+                            <a href="{{ url_for('patient.uploaded_file', filename=record.file_path) }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                <i class="fas fa-file me-1"></i>View
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% if record.diagnosis %}
+                        <small class="text-muted">{{ record.diagnosis[:100] }}{% if record.diagnosis|length > 100 %}...{% endif %}</small>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-folder-open fa-3x mb-2"></i>
+                    <p>No medical records yet</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

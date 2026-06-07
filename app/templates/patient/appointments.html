@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}My Appointments{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3><i class="fas fa-calendar-check text-primary me-2"></i>My Appointments</h3>
+    <a href="{{ url_for('patient.book_appointment') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Book New
+    </a>
+</div>
+
+{% if appointments %}
+<div class="table-responsive">
+    <table class="table table-hover shadow-sm">
+        <thead class="table-primary">
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Doctor</th>
+                <th>Specialization</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for apt in appointments %}
+            <tr>
+                <td>{{ apt.appointment_date.strftime('%b %d, %Y') }}</td>
+                <td>{{ apt.appointment_time.strftime('%H:%M') }}</td>
+                <td>{{ apt.doctor.full_name }}</td>
+                <td>{{ apt.doctor.specialization }}</td>
+                <td>{{ apt.reason[:50] }}{% if apt.reason and apt.reason|length > 50 %}...{% endif %}</td>
+                <td>
+                    {% if apt.status == 'scheduled' %}
+                    <span class="badge bg-success">Scheduled</span>
+                    {% elif apt.status == 'completed' %}
+                    <span class="badge bg-info">Completed</span>
+                    {% elif apt.status == 'cancelled' %}
+                    <span class="badge bg-danger">Cancelled</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if apt.status == 'scheduled' %}
+                    <form method="POST" action="{{ url_for('patient.cancel_appointment', appointment_id=apt.id) }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Cancel this appointment?');">
+                            <i class="fas fa-times me-1"></i>Cancel
+                        </button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card shadow-sm">
+    <div class="card-body text-center py-5">
+        <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+        <h5 class="text-muted">No appointments found</h5>
+        <p>Book your first appointment with a doctor.</p>
+        <a href="{{ url_for('patient.book_appointment') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Book Appointment
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

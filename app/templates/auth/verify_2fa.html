@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Verify 2FA{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-4 text-center">
+                <i class="fas fa-shield-alt text-primary" style="font-size: 3rem;"></i>
+                <h4 class="mt-3">Two-Factor Authentication</h4>
+                <p class="text-muted">Enter the 6-digit code from your authenticator app</p>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.totp_code(class="form-control form-control-lg text-center" + (" is-invalid" if form.totp_code.errors else ""), placeholder="000000", maxlength=6, autocomplete="off") }}
+                        {% for error in form.totp_code.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-check-circle me-2"></i>Verify
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

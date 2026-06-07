@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Doctor Dashboard{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3>
+                <i class="fas fa-user-md text-primary me-2"></i>
+                Dr. {{ doctor.full_name }}
+            </h3>
+            <span class="badge bg-info fs-6">{{ doctor.specialization }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="card bg-primary text-white shadow">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-day fa-2x mb-2"></i>
+                <h5>{{ today_appointments|length }}</h5>
+                <p class="mb-0">Today's Appointments</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card bg-success text-white shadow">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-week fa-2x mb-2"></i>
+                <h5>{{ upcoming_appointments|length }}</h5>
+                <p class="mb-0">Upcoming Appointments</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card bg-info text-white shadow">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-2x mb-2"></i>
+                <h5>{{ recent_patients|length }}</h5>
+                <p class="mb-0">My Patients</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-clock text-warning me-2"></i>Today's Appointments</h5>
+            </div>
+            <div class="card-body">
+                {% if today_appointments %}
+                <div class="list-group list-group-flush">
+                    {% for apt in today_appointments %}
+                    <div class="list-group-item px-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ apt.patient.full_name }}</strong>
+                                <small class="d-block text-muted">
+                                    <i class="fas fa-clock me-1"></i>{{ apt.appointment_time.strftime('%H:%M') }}
+                                    {% if apt.reason %} - {{ apt.reason[:50] }}{% endif %}
+                                </small>
+                            </div>
+                            <form method="POST" action="{{ url_for('doctor.complete_appointment', appointment_id=apt.id) }}" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-success">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-check-circle fa-3x mb-2"></i>
+                    <p>No appointments scheduled for today</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-users text-primary me-2"></i>Recent Patients</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_patients %}
+                <div class="list-group list-group-flush">
+                    {% for patient in recent_patients %}
+                    <a href="{{ url_for('doctor.view_patient', patient_id=patient.id) }}" class="list-group-item list-group-item-action px-0">
+                        <div>
+                            <strong>{{ patient.full_name }}</strong>
+                            <small class="d-block text-muted">
+                                {% if patient.blood_type %}Blood: {{ patient.blood_type }} | {% endif %}
+                                {% if patient.allergies %}Allergies: {{ patient.allergies[:30] }}{% endif %}
+                            </small>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-user-plus fa-3x mb-2"></i>
+                    <p>No patients yet</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

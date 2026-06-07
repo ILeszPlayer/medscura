@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Setup 2FA{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="fas fa-shield-alt text-primary" style="font-size: 3rem;"></i>
+                    <h4 class="mt-2">Setup Two-Factor Authentication</h4>
+                    <p class="text-muted">Enhance your account security with 2FA</p>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Scan the QR code below with Google Authenticator or any TOTP-compatible app, then enter the 6-digit code to verify.
+                </div>
+
+                <div class="text-center mb-4">
+                    <div class="border rounded p-3 d-inline-block bg-light">
+                        <img src="data:image/svg+xml;base64,{{ qrcode }}" alt="2FA QR Code" style="width: 200px; height: 200px;">
+                    </div>
+                    <p class="mt-2 text-muted small">
+                        <i class="fas fa-key me-1"></i>
+                        Secret: <code>{{ secret }}</code>
+                    </p>
+                </div>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        <label class="form-label">Verify 6-digit Code</label>
+                        {{ form.totp_code(class="form-control form-control-lg text-center" + (" is-invalid" if form.totp_code.errors else ""), placeholder="000000", maxlength=6, autocomplete="off") }}
+                        {% for error in form.totp_code.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    {% if current_user.is_2fa_enabled %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-warning btn-lg">
+                            <i class="fas fa-check-circle me-2"></i>Verify & Enable 2FA
+                        </button>
+                    </div>
+                    {% else %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-check-circle me-2"></i>Verify & Enable 2FA
+                        </button>
+                    </div>
+                    {% endif %}
+                </form>
+
+                {% if current_user.is_2fa_enabled %}
+                <hr class="my-4">
+                <form method="POST" action="{{ url_for('auth.disable_2fa') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label class="form-label">Enter current 2FA code to disable</label>
+                        <input type="text" name="totp_code" class="form-control text-center" placeholder="000000" maxlength="6" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to disable 2FA?');">
+                            <i class="fas fa-shield-slash me-2"></i>Disable 2FA
+                        </button>
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Appointments{% endblock %}
+{% block content %}
+<h3 class="mb-4"><i class="fas fa-calendar-check text-primary me-2"></i>Appointments</h3>
+
+{% if appointments %}
+<div class="table-responsive">
+    <table class="table table-hover shadow-sm">
+        <thead class="table-primary">
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Patient</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for apt in appointments %}
+            <tr>
+                <td>{{ apt.appointment_date.strftime('%b %d, %Y') }}</td>
+                <td>{{ apt.appointment_time.strftime('%H:%M') }}</td>
+                <td>
+                    <a href="{{ url_for('doctor.view_patient', patient_id=apt.patient.id) }}">
+                        {{ apt.patient.full_name }}
+                    </a>
+                </td>
+                <td>{{ apt.reason[:50] }}{% if apt.reason and apt.reason|length > 50 %}...{% endif %}</td>
+                <td>
+                    {% if apt.status == 'scheduled' %}
+                    <span class="badge bg-success">Scheduled</span>
+                    {% elif apt.status == 'completed' %}
+                    <span class="badge bg-info">Completed</span>
+                    {% elif apt.status == 'cancelled' %}
+                    <span class="badge bg-danger">Cancelled</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if apt.status == 'scheduled' %}
+                    <form method="POST" action="{{ url_for('doctor.complete_appointment', appointment_id=apt.id) }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-success">
+                            <i class="fas fa-check me-1"></i>Complete
+                        </button>
+                    </form>
+                    {% endif %}
+                    <a href="{{ url_for('doctor.add_medical_record', patient_id=apt.patient.id) }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-notes-medical me-1"></i>Add Record
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card shadow-sm">
+    <div class="card-body text-center py-5">
+        <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+        <p class="h5 text-muted">No appointments found</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

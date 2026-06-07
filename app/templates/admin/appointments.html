@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}All Appointments{% endblock %}
+{% block content %}
+<h3 class="mb-4"><i class="fas fa-calendar-alt text-primary me-2"></i>All Appointments</h3>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% if appointments %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for apt in appointments %}
+                    <tr>
+                        <td>{{ apt.id }}</td>
+                        <td>{{ apt.patient.full_name }}</td>
+                        <td>{{ apt.doctor.full_name }}</td>
+                        <td>{{ apt.appointment_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ apt.appointment_time.strftime('%H:%M') }}</td>
+                        <td>
+                            {% if apt.status == 'scheduled' %}
+                            <span class="badge bg-success">Scheduled</span>
+                            {% elif apt.status == 'completed' %}
+                            <span class="badge bg-info">Completed</span>
+                            {% elif apt.status == 'cancelled' %}
+                            <span class="badge bg-danger">Cancelled</span>
+                            {% endif %}
+                        </td>
+                        <td class="small">{{ apt.reason[:50] }}{% if apt.reason and apt.reason|length > 50 %}...{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-3">No appointments found</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

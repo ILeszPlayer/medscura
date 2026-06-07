@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}My Patients{% endblock %}
+{% block content %}
+<h3 class="mb-4"><i class="fas fa-users text-primary me-2"></i>My Patients</h3>
+
+{% if patients %}
+<div class="row">
+    {% for patient in patients %}
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.5rem;">
+                        {{ patient.full_name[0] }}
+                    </div>
+                    <div>
+                        <h5 class="mb-0">{{ patient.full_name }}</h5>
+                        <small class="text-muted">
+                            {% if patient.blood_type %}Blood: {{ patient.blood_type }}{% endif %}
+                            {% if patient.gender %} | {{ patient.gender }}{% endif %}
+                        </small>
+                    </div>
+                </div>
+                {% if patient.allergies %}
+                <p class="small mb-2">
+                    <i class="fas fa-exclamation-triangle text-warning me-1"></i>
+                    Allergies: {{ patient.allergies[:80] }}
+                </p>
+                {% endif %}
+                <a href="{{ url_for('doctor.view_patient', patient_id=patient.id) }}" class="btn btn-sm btn-outline-primary w-100">
+                    <i class="fas fa-eye me-1"></i>View Details
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card shadow-sm">
+    <div class="card-body text-center py-5">
+        <i class="fas fa-user-plus fa-4x text-muted mb-3"></i>
+        <p class="h5 text-muted">No patients assigned yet</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

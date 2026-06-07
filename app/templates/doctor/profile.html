@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="fas fa-user-md text-primary" style="font-size: 3rem;"></i>
+                    <h4 class="mt-2">Doctor Profile</h4>
+                    <p class="text-muted">Manage your professional information</p>
+                </div>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Full Name</label>
+                            {{ form.full_name(class="form-control" + (" is-invalid" if form.full_name.errors else "")) }}
+                            {% for error in form.full_name.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Specialization</label>
+                            {{ form.specialization(class="form-control" + (" is-invalid" if form.specialization.errors else "")) }}
+                            {% for error in form.specialization.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone</label>
+                            {{ form.phone(class="form-control" + (" is-invalid" if form.phone.errors else "")) }}
+                            {% for error in form.phone.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Available Days</label>
+                            {{ form.available_days(class="form-control" + (" is-invalid" if form.available_days.errors else ""), placeholder="e.g., Mon, Tue, Wed, Thu, Fri") }}
+                            {% for error in form.available_days.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Bio</label>
+                        {{ form.bio(class="form-control" + (" is-invalid" if form.bio.errors else ""), rows=3, placeholder="Brief professional biography") }}
+                        {% for error in form.bio.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save me-2"></i>Save Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}Patient Details{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3>
+                <i class="fas fa-user text-primary me-2"></i>
+                {{ patient.full_name }}
+            </h3>
+            <a href="{{ url_for('doctor.add_medical_record', patient_id=patient.id) }}" class="btn btn-primary">
+                <i class="fas fa-notes-medical me-2"></i>Add Medical Record
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Patient Information</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <th>Full Name</th>
+                        <td>{{ patient.full_name }}</td>
+                    </tr>
+                    {% if patient.date_of_birth %}
+                    <tr>
+                        <th>Date of Birth</th>
+                        <td>{{ patient.date_of_birth.strftime('%b %d, %Y') }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if patient.gender %}
+                    <tr>
+                        <th>Gender</th>
+                        <td>{{ patient.gender|capitalize }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if patient.phone %}
+                    <tr>
+                        <th>Phone</th>
+                        <td>{{ patient.phone }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if patient.blood_type %}
+                    <tr>
+                        <th>Blood Type</th>
+                        <td><span class="badge bg-danger">{{ patient.blood_type }}</span></td>
+                    </tr>
+                    {% endif %}
+                    {% if patient.allergies %}
+                    <tr>
+                        <th>Allergies</th>
+                        <td class="text-warning">{{ patient.allergies }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if patient.address %}
+                    <tr>
+                        <th>Address</th>
+                        <td>{{ patient.address }}</td>
+                    </tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Appointment History</h5>
+            </div>
+            <div class="card-body">
+                {% if appointments %}
+                <div class="list-group list-group-flush">
+                    {% for apt in appointments %}
+                    <div class="list-group-item px-0">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <strong>{{ apt.appointment_date.strftime('%b %d, %Y') }}</strong>
+                                <small class="d-block text-muted">{{ apt.appointment_time.strftime('%H:%M') }}</small>
+                            </div>
+                            <span class="badge {% if apt.status == 'completed' %}bg-info{% elif apt.status == 'scheduled' %}bg-success{% else %}bg-danger{% endif %}">
+                                {{ apt.status }}
+                            </span>
+                        </div>
+                        {% if apt.reason %}
+                        <small class="text-muted">{{ apt.reason }}</small>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-3">No appointment history</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="fas fa-notes-medical me-2"></i>Medical Records</h5>
+    </div>
+    <div class="card-body">
+        {% if records %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Diagnosis</th>
+                        <th>Prescription</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td>{{ record.created_at.strftime('%b %d, %Y') }}</td>
+                        <td>{{ record.diagnosis[:100] }}{% if record.diagnosis|length > 100 %}...{% endif %}</td>
+                        <td>{{ record.prescription[:100] }}{% if record.prescription|length > 100 %}...{% endif %}</td>
+                        <td>
+                            {% if record.file_path %}
+                            <a href="{{ url_for('doctor.uploaded_file', filename=record.file_path) }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                <i class="fas fa-file"></i>
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted text-center py-3">No medical records yet</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
