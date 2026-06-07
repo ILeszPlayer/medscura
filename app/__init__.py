@@ -2,9 +2,9 @@ import os
 import logging
 from logging.handlers import RotatingFileHandler
 from datetime import datetime
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, flash, session as flask_session
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from flask_login import LoginManager, logout_user, current_user
 from flask_wtf.csrf import CSRFProtect
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -24,6 +24,7 @@ def create_app(config_class=Config):
 
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     os.makedirs(app.config['LOG_DIR'], exist_ok=True)
+    os.makedirs(app.instance_path, exist_ok=True)
 
     db.init_app(app)
     login_manager.init_app(app)
@@ -65,7 +66,35 @@ def create_app(config_class=Config):
 
     @app.route('/')
     def index():
-        return redirect(url_for('auth.login'))
+        from flask import render_template
+        return render_template('landing.html')
+
+    @app.route('/.well-known/security.txt')
+    def security_txt():
+        from flask import Response
+        content = (
+            "Contact: mailto:admin@medsecure.com\n"
+            "Expires: 2027-12-31T23:59:59.000Z\n"
+            "Preferred-Languages: en, id\n"
+            "Canonical: http://localhost:5000/.well-known/security.txt\n"
+            "Policy: http://localhost:5000/security-policy\n"
+            "Hiring: https://medsecure.com/careers\n"
+        )
+        return Response(content, mimetype='text/plain')
+
+    @app.route('/robots.txt')
+    def robots_txt():
+        from flask import Response
+        content = (
+            "User-agent: *\n"
+            "Disallow: /admin/\n"
+            "Disallow: /api/\n"
+            "Disallow: /auth/\n"
+            "Disallow: /patient/\n"
+            "Disallow: /doctor/\n"
+            "Disallow: /uploads/\n"
+        )
+        return Response(content, mimetype='text/plain')
 
     setup_logging(app)
 
@@ -117,8 +146,27 @@ def create_app(config_class=Config):
         response.headers['X-Frame-Options'] = 'SAMEORIGIN'
         response.headers['X-XSS-Protection'] = '1; mode=block'
         response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-        response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
+        response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=(), payment=(), usb=()'
+        response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
+        response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
+        response.headers['Cross-Origin-Resource-Policy'] = 'same-origin'
+        if 'Content-Type' in response.headers and 'text/html' in response.headers['Content-Type']:
+            response.headers['X-Download-Options'] = 'noopen'
         return response
+
+    @app.before_request
+    def check_session_timeout():
+        if current_user.is_authenticated:
+            last_active = flask_session.get('last_active')
+            now = datetime.utcnow()
+            if last_active:
+                elapsed = (now - last_active).total_seconds()
+                if elapsed > 1800:
+                    logout_user()
+                    flask_session.clear()
+                    flash('Session expired due to inactivity.', 'info')
+                    return redirect(url_for('auth.login'))
+            flask_session['last_active'] = now
 
     return app
 

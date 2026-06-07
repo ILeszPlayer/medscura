@@ -1,7 +1,21 @@
 from functools import wraps
-from flask import abort, current_app, request
+from flask import abort, current_app, request, jsonify
 from flask_login import current_user
+from app.utils import is_ip_blocked, track_suspicious_ip
 import re
+
+
+def check_ip_blocked(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        ip = request.remote_addr or 'unknown'
+        if is_ip_blocked(ip):
+            track_suspicious_ip(ip, 'Attempted access while blocked')
+            if request.is_json:
+                return jsonify({'error': 'Access denied. IP temporarily blocked.'}), 429
+            abort(429)
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 def role_required(*roles):

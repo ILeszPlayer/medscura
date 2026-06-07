@@ -50,7 +50,7 @@
 
                 <hr class="my-4">
 
-                <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
                         <i class="fas fa-shield-alt {% if current_user.is_2fa_enabled %}text-success{% else %}text-muted{% endif %} me-2"></i>
                         <strong>Two-Factor Authentication</strong>
@@ -61,6 +61,43 @@
                         {% else %}
                         <i class="fas fa-plus-circle me-1"></i>Enable
                         {% endif %}
+                    </a>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <i class="fas fa-laptop text-info me-2"></i>
+                        <strong>Active Sessions</strong>
+                    </div>
+                    <a href="{{ url_for('auth.list_sessions') }}" class="btn btn-sm btn-outline-info">
+                        <i class="fas fa-eye me-1"></i>View
+                    </a>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <strong>Trusted Devices</strong>
+                        <br><small class="text-muted">Devices that skip 2FA</small>
+                    </div>
+                    <form method="POST" action="{{ url_for('auth.clear_trusted_devices') }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-outline-warning" data-confirm="Clear all trusted devices?">
+                            <i class="fas fa-undo me-1"></i>Clear All
+                        </button>
+                    </form>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-trash-alt text-danger me-2"></i>
+                        <strong class="text-danger">Delete Account</strong>
+                        <br><small class="text-muted">Permanently remove all your data</small>
+                    </div>
+                    <a href="{{ url_for('auth.delete_account') }}" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-exclamation-triangle me-1"></i>Delete
                     </a>
                 </div>
             </div>

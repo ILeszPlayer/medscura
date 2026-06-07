@@ -1,6 +1,6 @@
 from flask import (
     Blueprint, render_template, redirect, url_for,
-    flash, request, current_app
+    flash, request, current_app, Response
 )
 from flask_login import login_required, current_user
 from datetime import datetime
@@ -8,7 +8,7 @@ from app import db
 from app.models import User, Patient, Doctor, Appointment, MedicalRecord, AuditLog
 from app.forms import DoctorProfileForm, MedicalRecordForm
 from app.decorators import role_required, sanitize_params
-from app.utils import secure_save_file, sanitize_text, sanitize_html, log_audit
+from app.utils import secure_save_file, sanitize_text, sanitize_html, log_audit, read_encrypted_file
 
 bp = Blueprint('doctor', __name__, url_prefix='/doctor')
 
@@ -197,5 +197,19 @@ def add_medical_record(patient_id):
 @login_required
 @role_required('doctor')
 def uploaded_file(filename):
-    from flask import send_from_directory
-    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
+    file_data = read_encrypted_file(filename)
+    if file_data is None:
+        flash('File not found.', 'danger')
+        return redirect(url_for('doctor.dashboard'))
+
+    ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else 'bin'
+    mimetypes = {
+        'pdf': 'application/pdf',
+        'png': 'image/png', 'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'gif': 'image/gif',
+        'doc': 'application/msword',
+        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    }
+    mimetype = mimetypes.get(ext, 'application/octet-stream')
+
+    return Response(file_data, mimetype=mimetype,
+                    headers={'Content-Disposition': f'inline; filename="{filename}"'})

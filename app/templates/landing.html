@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Welcome{% endblock %}
 {% block content %}
-<div class="row min-vh-75 align-items-center">
-    <div class="col-lg-6">
+<div class="row min-vh-50 align-items-center">
+    <div class="col-lg-8 mx-auto text-center">
         <h1 class="display-4 fw-bold text-primary">
             <i class="fas fa-heartbeat me-2"></i>MedSecure
         </h1>
@@ -10,8 +10,8 @@
             Secure Healthcare Management System
         </p>
         <p class="text-muted">
-            A security-focused platform for managing patient records, appointments, 
-            and healthcare data with enterprise-grade protection.
+            A security-focused platform demonstrating enterprise-grade protection for healthcare data.
+            Built for <strong>IFB-302 Network Security</strong> course.
         </p>
         <div class="mt-4">
             <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg me-2">
@@ -21,40 +21,109 @@
                 <i class="fas fa-user-plus me-2"></i>Register
             </a>
         </div>
-    </div>
-    <div class="col-lg-6 text-center">
-        <i class="fas fa-shield-alt text-primary" style="font-size: 12rem; opacity: 0.1;"></i>
+        <div class="alert alert-info mt-4">
+            <i class="fas fa-info-circle me-1"></i>
+            <strong>Demo Admin:</strong> admin / Admin123!
+        </div>
     </div>
 </div>
 
-<div class="row mt-5 pt-5">
+<div class="row mt-5">
     <div class="col-12 text-center mb-4">
-        <h3><i class="fas fa-lock me-2"></i>Security Features Implemented</h3>
+        <h3><i class="fas fa-shield-alt me-2"></i>Network Security Features</h3>
+        <p class="text-muted">Comprehensive security implementation for healthcare data protection</p>
     </div>
+
     <div class="col-md-4 mb-3">
         <div class="card border-primary h-100 shadow-sm">
-            <div class="card-body text-center">
-                <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
-                <h5>Authentication Security</h5>
-                <p class="text-muted small">Password hashing (bcrypt), 2FA/TOTP, account lockout, session management with JWT</p>
+            <div class="card-header bg-primary text-white fw-bold">
+                <i class="fas fa-user-lock me-2"></i>Authentication & Access Control
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li><i class="fas fa-check text-success me-2"></i>bcrypt Password Hashing</li>
+                    <li><i class="fas fa-check text-success me-2"></i>TOTP 2FA (Google Authenticator)</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Account Lockout (5 attempts)</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Password Policy Enforcement</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Password Rotation (90 days)</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Self-Service Password Reset</li>
+                    <li><i class="fas fa-check text-success me-2"></i>New IP Login Detection</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Role-Based Access Control</li>
+                </ul>
             </div>
         </div>
     </div>
+
     <div class="col-md-4 mb-3">
         <div class="card border-success h-100 shadow-sm">
-            <div class="card-body text-center">
-                <i class="fas fa-database fa-3x text-success mb-3"></i>
-                <h5>Data Protection</h5>
-                <p class="text-muted small">SQL injection prevention (ORM), XSS sanitization, CSRF tokens, input validation</p>
+            <div class="card-header bg-success text-white fw-bold">
+                <i class="fas fa-shield-virus me-2"></i>Application Security
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li><i class="fas fa-check text-success me-2"></i>CSRF Protection (Flask-WTF)</li>
+                    <li><i class="fas fa-check text-success me-2"></i>SQL Injection Prevention (SQLAlchemy ORM)</li>
+                    <li><i class="fas fa-check text-success me-2"></i>XSS Sanitization (Bleach + Jinja2)</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Input Validation (WTForms)</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Secure File Upload (MIME validation)</li>
+                    <li><i class="fas fa-check text-success me-2"></i>AES-256 Encryption at Rest</li>
+                    <li><i class="fas fa-check text-success me-2"></i>JWT API Authentication</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Rate Limiting (10/min login)</li>
+                </ul>
             </div>
         </div>
     </div>
+
     <div class="col-md-4 mb-3">
         <div class="card border-warning h-100 shadow-sm">
-            <div class="card-body text-center">
-                <i class="fas fa-network-wired fa-3x text-warning mb-3"></i>
-                <h5>Infrastructure Security</h5>
-                <p class="text-muted small">Rate limiting, security headers, CSP, RBAC, audit logging, secure file upload</p>
+            <div class="card-header bg-warning text-dark fw-bold">
+                <i class="fas fa-network-wired me-2"></i>Infrastructure Security
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li><i class="fas fa-check text-success me-2"></i>Content Security Policy (CSP)</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Security Headers (HSTS, X-Frame-Options, etc.)</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Suspicious IP Detection & Blocking</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Session Timeout (30 min inactivity)</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Session Management (view/revoke)</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Comprehensive Audit Logging</li>
+                    <li><i class="fas fa-check text-success me-2"></i>2FA Brute Force Protection</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Cross-Origin Security Policies</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="card border-info shadow-sm">
+            <div class="card-header bg-info text-white fw-bold">
+                <i class="fas fa-flask me-2"></i>Penetration Testing & Security Testing
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-skull text-danger me-1"></i>Red Team Testing</h6>
+                        <ul class="small">
+                            <li><strong>SQL Injection:</strong> All queries use SQLAlchemy ORM with parameterized queries - try SQLi on login forms</li>
+                            <li><strong>XSS:</strong> Input sanitized with Bleach + Jinja2 autoescaping - script injection is blocked</li>
+                            <li><strong>CSRF:</strong> All forms protected by Flask-WTF tokens - cross-site requests blocked</li>
+                            <li><strong>Brute Force:</strong> Rate limited to 10 attempts/min + account lockout after 5 failures</li>
+                            <li><strong>Session Hijacking:</strong> HttpOnly + Secure cookies, session timeout, IP tracking</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-shield text-success me-1"></i>Blue Team Monitoring</h6>
+                        <ul class="small">
+                            <li><strong>Audit Logs:</strong> All security events logged with IP, user-agent, timestamp</li>
+                            <li><strong>Suspicious IPs:</strong> Admin dashboard tracks and auto-blocks malicious IPs</li>
+                            <li><strong>Failed Logins:</strong> Monitor /admin/logs for LOGIN_FAILED events</li>
+                            <li><strong>2FA Usage:</strong> Track 2FA enable/disable and verification attempts</li>
+                            <li><strong>File Uploads:</strong> All files encrypted with AES-256, MIME-validated</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

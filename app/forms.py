@@ -110,12 +110,32 @@ class Setup2FAForm(FlaskForm):
     totp_code = StringField('Verify Code', validators=[
         DataRequired(), Length(min=6, max=6)
     ])
+    trust_device = BooleanField('Trust this device for 30 days', validators=[Optional()])
 
 
 class Disable2FAForm(FlaskForm):
     totp_code = StringField('Current 2FA Code', validators=[
         DataRequired(), Length(min=6, max=6)
     ])
+
+
+class ForgotPasswordForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email(), Length(max=120)])
+
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('New Password', validators=[
+        DataRequired(),
+        lambda form, field: validate_password_strength(field)
+    ])
+    confirm_password = PasswordField('Confirm New Password', validators=[
+        DataRequired(), EqualTo('password', message='Passwords must match')
+    ])
+
+
+class DeleteAccountForm(FlaskForm):
+    password = PasswordField('Confirm Password', validators=[DataRequired()])
+    confirmation = StringField('Type "DELETE" to confirm', validators=[DataRequired()])
 
 
 class AdminUserEditForm(FlaskForm):

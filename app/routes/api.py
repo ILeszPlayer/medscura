@@ -1,10 +1,11 @@
 from flask import Blueprint, jsonify, request, current_app
-from app import db
+from app import db, limiter
 from app.models import User, Patient, Doctor, Appointment, MedicalRecord, AuditLog
 from app.decorators import validate_json_request
-from app.utils import decode_jwt_token, generate_jwt_token, log_audit
-from werkzeug.security import check_password_hash
+from app.utils import decode_jwt_token, generate_jwt_token, log_audit, sanitize_text
+from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
+from datetime import datetime
 import re
 
 bp = Blueprint('api', __name__, url_prefix='/api')
@@ -226,6 +227,97 @@ def get_profile():
         }
 
     return jsonify(profile_data)
+
+
+@bp.route('/auth/change-password', methods=['POST'])
+@jwt_required
+@validate_json_request
+def api_change_password():
+    data = request.get_json()
+    current_password = data.get('current_password', '')
+    new_password = data.get('new_password', '')
+
+    if not current_password or not new_password:
+        return jsonify({'error': 'Current and new password required'}), 400
+
+    if len(new_password) < 8:
+        return jsonify({'error': 'Password must be at least 8 characters'}), 400
+
+    user = User.query.get(request.current_user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    if not check_password_hash(user.password_hash, current_password):
+        log_audit(current_app._get_current_object(), user.id,
+                  'API_CHANGE_PASSWORD_FAILED', 'Wrong current password',
+                  request.remote_addr)
+        return jsonify({'error': 'Current password is incorrect'}), 403
+
+    user.password_hash = generate_password_hash(new_password)
+    db.session.commit()
+
+    log_audit(current_app._get_current_object(), user.id,
+              'API_CHANGE_PASSWORD', 'Password changed via API',
+              request.remote_addr)
+
+    return jsonify({'message': 'Password changed successfully'}), 200
+
+
+@bp.route('/profile', methods=['PUT'])
+@jwt_required
+@validate_json_request
+def api_update_profile():
+    user = User.query.get(request.current_user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    data = request.get_json()
+
+    if user.role == 'patient':
+        patient = Patient.query.filter_by(user_id=user.id).first()
+        if not patient:
+            return jsonify({'error': 'Patient profile not found'}), 404
+
+        if 'full_name' in data:
+            patient.full_name = sanitize_text(data['full_name'])
+        if 'phone' in data:
+            patient.phone = sanitize_text(data['phone'])
+        if 'address' in data:
+            patient.address = sanitize_text(data['address'])
+        if 'blood_type' in data:
+            patient.blood_type = data['blood_type']
+        if 'allergies' in data:
+            patient.allergies = sanitize_text(data['allergies'])
+        if 'gender' in data:
+            patient.gender = data['gender']
+        if 'date_of_birth' in data:
+            try:
+                patient.date_of_birth = datetime.strptime(data['date_of_birth'], '%Y-%m-%d').date()
+            except ValueError:
+                return jsonify({'error': 'Invalid date format (use YYYY-MM-DD)'}), 400
+
+    elif user.role == 'doctor':
+        doctor = Doctor.query.filter_by(user_id=user.id).first()
+        if not doctor:
+            return jsonify({'error': 'Doctor profile not found'}), 404
+
+        if 'full_name' in data:
+            doctor.full_name = sanitize_text(data['full_name'])
+        if 'specialization' in data:
+            doctor.specialization = sanitize_text(data['specialization'])
+        if 'phone' in data:
+            doctor.phone = sanitize_text(data['phone'])
+        if 'bio' in data:
+            doctor.bio = sanitize_text(data['bio'])
+        if 'available_days' in data:
+            doctor.available_days = sanitize_text(data['available_days'])
+
+    db.session.commit()
+    log_audit(current_app._get_current_object(), user.id,
+              'API_UPDATE_PROFILE', 'Profile updated via API',
+              request.remote_addr)
+
+    return jsonify({'message': 'Profile updated'}), 200
 
 
 @bp.route('/health', methods=['GET'])

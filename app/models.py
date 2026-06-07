@@ -22,6 +22,9 @@ class User(UserMixin, db.Model):
     failed_login_attempts = db.Column(db.Integer, default=0)
     locked_until = db.Column(db.DateTime, nullable=True)
     last_login = db.Column(db.DateTime, nullable=True)
+    last_login_ip = db.Column(db.String(45), nullable=True)
+    last_password_change = db.Column(db.DateTime, default=datetime.utcnow)
+    password_expires_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -114,9 +117,65 @@ class AuditLog(db.Model):
     action = db.Column(db.String(100), nullable=False, index=True)
     details = db.Column(db.Text, nullable=True)
     ip_address = db.Column(db.String(45), nullable=True)
+    user_agent = db.Column(db.String(500), nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
 
     user = db.relationship('User', backref='audit_logs', lazy=True)
 
     def __repr__(self):
         return f'<AuditLog {self.action} by {self.user_id} at {self.timestamp}>'
+
+
+class PasswordResetToken(db.Model):
+    __tablename__ = 'password_reset_tokens'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    token = db.Column(db.String(256), unique=True, nullable=False, index=True)
+    expires_at = db.Column(db.DateTime, nullable=False)
+    used = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='reset_tokens', lazy=True)
+
+    def is_expired(self):
+        return datetime.utcnow() > self.expires_at
+
+    def __repr__(self):
+        return f'<PasswordResetToken for user {self.user_id}>'
+
+
+class UserSession(db.Model):
+    __tablename__ = 'user_sessions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    session_token = db.Column(db.String(256), unique=True, nullable=False, index=True)
+    ip_address = db.Column(db.String(45), nullable=True)
+    user_agent = db.Column(db.String(500), nullable=True)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_activity = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='sessions', lazy=True)
+
+    def __repr__(self):
+        return f'<UserSession {self.id} for user {self.user_id}>'
+
+
+class SuspiciousIP(db.Model):
+    __tablename__ = 'suspicious_ips'
+
+    id = db.Column(db.Integer, primary_key=True)
+    ip_address = db.Column(db.String(45), nullable=False, index=True)
+    reason = db.Column(db.String(200), nullable=False)
+    blocked_until = db.Column(db.DateTime, nullable=True)
+    attempt_count = db.Column(db.Integer, default=1)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def is_blocked(self):
+        return self.blocked_until and self.blocked_until > datetime.utcnow()
+
+    def __repr__(self):
+        return f'<SuspiciousIP {self.ip_address}>'

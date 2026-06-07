@@ -5,7 +5,7 @@ from flask import (
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
 from app import db
-from app.models import User, Patient, Doctor, Appointment, MedicalRecord, AuditLog
+from app.models import User, Patient, Doctor, Appointment, MedicalRecord, AuditLog, SuspiciousIP
 from app.forms import AdminUserEditForm
 from app.decorators import role_required, sanitize_params
 from app.utils import sanitize_text, log_audit
@@ -24,6 +24,30 @@ def dashboard():
     total_appointments = Appointment.query.count()
     active_users = User.query.filter_by(is_active=True).count()
     locked_users = User.query.filter(User.locked_until > datetime.utcnow()).count()
+    suspicious_ips = SuspiciousIP.query.count()
+    blocked_ips = SuspiciousIP.query.filter(
+        SuspiciousIP.blocked_until > datetime.utcnow()
+    ).count()
+    twofa_users = User.query.filter_by(is_2fa_enabled=True).count()
+
+    last_24h = datetime.utcnow() - timedelta(hours=24)
+    failed_logins_24h = AuditLog.query.filter(
+        AuditLog.action == 'LOGIN_FAILED',
+        AuditLog.timestamp >= last_24h
+    ).count()
+    total_events_24h = AuditLog.query.filter(
+        AuditLog.timestamp >= last_24h
+    ).count()
+
+    top_actions = db.session.query(
+        AuditLog.action, db.func.count(AuditLog.id).label('count')
+    ).filter(
+        AuditLog.timestamp >= last_24h
+    ).group_by(AuditLog.action).order_by(db.desc('count')).limit(5).all()
+
+    recent_suspicious = SuspiciousIP.query.order_by(
+        SuspiciousIP.updated_at.desc()
+    ).limit(5).all()
 
     recent_logs = AuditLog.query.order_by(
         AuditLog.timestamp.desc()
@@ -36,6 +60,13 @@ def dashboard():
                            total_appointments=total_appointments,
                            active_users=active_users,
                            locked_users=locked_users,
+                           suspicious_ips=suspicious_ips,
+                           blocked_ips=blocked_ips,
+                           twofa_users=twofa_users,
+                           failed_logins_24h=failed_logins_24h,
+                           total_events_24h=total_events_24h,
+                           top_actions=top_actions,
+                           recent_suspicious=recent_suspicious,
                            recent_logs=recent_logs)
 
 
@@ -67,7 +98,7 @@ def edit_user(user_id):
 
         log_audit(current_app._get_current_object(), current_user.id,
                   'ADMIN_EDIT_USER', f'Edited user {user_id}: {user.username}',
-                  request.remote_addr)
+                  request.remote_addr, request.user_agent.string if request.user_agent else None)
         flash('User updated successfully!', 'success')
         return redirect(url_for('admin.list_users'))
 
@@ -86,10 +117,10 @@ def toggle_user_active(user_id):
     user.is_active = not user.is_active
     db.session.commit()
 
+    status = 'Activated' if user.is_active else 'Deactivated'
     log_audit(current_app._get_current_object(), current_user.id,
-              'ADMIN_TOGGLE_USER',
-              f'{'Activated' if user.is_active else 'Deactivated'} user {user_id}',
-              request.remote_addr)
+              'ADMIN_TOGGLE_USER', f'{status} user {user_id}',
+              request.remote_addr, request.user_agent.string if request.user_agent else None)
     flash(f'User {user.username} {"activated" if user.is_active else "deactivated"}.', 'success')
     return redirect(url_for('admin.list_users'))
 
@@ -105,7 +136,7 @@ def unlock_user(user_id):
 
     log_audit(current_app._get_current_object(), current_user.id,
               'ADMIN_UNLOCK_USER', f'Unlocked user {user_id}',
-              request.remote_addr)
+              request.remote_addr, request.user_agent.string if request.user_agent else None)
     flash(f'User {user.username} unlocked.', 'success')
     return redirect(url_for('admin.list_users'))
 
@@ -123,7 +154,7 @@ def reset_user_password(user_id):
 
     log_audit(current_app._get_current_object(), current_user.id,
               'ADMIN_RESET_PASSWORD', f'Reset password for user {user_id}',
-              request.remote_addr)
+              request.remote_addr, request.user_agent.string if request.user_agent else None)
     flash(f'Password for {user.username} reset to: {new_password}', 'warning')
     return redirect(url_for('admin.list_users'))
 
@@ -161,3 +192,30 @@ def list_appointments():
         Appointment.appointment_date.desc()
     ).all()
     return render_template('admin/appointments.html', appointments=appointments)
+
+
+@bp.route('/suspicious-ips')
+@login_required
+@role_required('admin')
+def list_suspicious_ips():
+    page = request.args.get('page', 1, type=int)
+    ips = SuspiciousIP.query.order_by(
+        SuspiciousIP.updated_at.desc()
+    ).paginate(page=page, per_page=50, error_out=False)
+    return render_template('admin/suspicious_ips.html', ips=ips)
+
+
+@bp.route('/suspicious-ips/<int:ip_id>/clear', methods=['POST'])
+@login_required
+@role_required('admin')
+def clear_suspicious_ip(ip_id):
+    ip_record = SuspiciousIP.query.get_or_404(ip_id)
+    db.session.delete(ip_record)
+    db.session.commit()
+
+    log_audit(current_app._get_current_object(), current_user.id,
+              'ADMIN_CLEAR_SUSPICIOUS_IP',
+              f'Cleared suspicious IP record {ip_id}: {ip_record.ip_address}',
+              request.remote_addr, request.user_agent.string if request.user_agent else None)
+    flash('Suspicious IP record cleared.', 'success')
+    return redirect(url_for('admin.list_suspicious_ips'))

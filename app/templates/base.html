@@ -13,7 +13,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ url_for('auth.login') }}">
+            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
                 <i class="fas fa-heartbeat me-2"></i>MedSecure
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -68,6 +68,11 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('admin.view_logs') }}">
                                 <i class="fas fa-history me-1"></i>Audit Logs
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('admin.list_suspicious_ips') }}">
+                                <i class="fas fa-exclamation-triangle me-1"></i>Suspicious IPs
                             </a>
                         </li>
                         {% endif %}

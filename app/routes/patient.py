@@ -1,14 +1,14 @@
 from flask import (
     Blueprint, render_template, redirect, url_for,
-    flash, request, current_app, send_from_directory
+    flash, request, current_app, send_from_directory, Response
 )
 from flask_login import login_required, current_user
 from datetime import datetime
 from app import db
-from app.models import User, Patient, Doctor, Appointment, MedicalRecord, AuditLog
+from app.models import User, Patient, Doctor, Appointment, MedicalRecord, AuditLog, UserSession
 from app.forms import PatientProfileForm, AppointmentForm
 from app.decorators import role_required, sanitize_params
-from app.utils import secure_save_file, sanitize_text, log_audit
+from app.utils import secure_save_file, sanitize_text, log_audit, read_encrypted_file
 import os
 
 bp = Blueprint('patient', __name__, url_prefix='/patient')
@@ -171,4 +171,20 @@ def uploaded_file(filename):
         if current_user.role != 'admin' and current_user.role != 'doctor':
             flash('Access denied.', 'danger')
             return redirect(url_for('patient.dashboard'))
-    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
+
+    file_data = read_encrypted_file(filename)
+    if file_data is None:
+        flash('File not found.', 'danger')
+        return redirect(url_for('patient.dashboard'))
+
+    ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else 'bin'
+    mimetypes = {
+        'pdf': 'application/pdf',
+        'png': 'image/png', 'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'gif': 'image/gif',
+        'doc': 'application/msword',
+        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    }
+    mimetype = mimetypes.get(ext, 'application/octet-stream')
+
+    return Response(file_data, mimetype=mimetype,
+                    headers={'Content-Disposition': f'inline; filename="{filename}"'})
