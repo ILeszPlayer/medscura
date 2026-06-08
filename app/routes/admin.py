@@ -5,7 +5,7 @@ from flask import (
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
 from app import db
-from app.models import User, Patient, Doctor, Appointment, MedicalRecord, AuditLog, SuspiciousIP
+from app.models import User, Patient, Doctor, Appointment, MedicalRecord, AuditLog, SuspiciousIP, UserSession
 from app.forms import AdminUserEditForm
 from app.decorators import role_required, sanitize_params
 from app.utils import sanitize_text, log_audit
@@ -23,20 +23,65 @@ def dashboard():
     total_doctors = Doctor.query.count()
     total_appointments = Appointment.query.count()
     active_users = User.query.filter_by(is_active=True).count()
+    twofa_users = User.query.filter_by(is_2fa_enabled=True).count()
+
+    today = datetime.utcnow().date()
+    today_appointments = Appointment.query.filter(
+        Appointment.appointment_date == today
+    ).count()
+
+    upcoming_appointments = Appointment.query.filter(
+        Appointment.appointment_date >= today,
+        Appointment.status == 'scheduled'
+    ).order_by(Appointment.appointment_date.asc()).limit(5).all()
+
+    recent_patients = Patient.query.order_by(
+        Patient.created_at.desc()
+    ).limit(5).all()
+
+    return render_template('admin/dashboard.html',
+                           total_users=total_users,
+                           total_patients=total_patients,
+                           total_doctors=total_doctors,
+                           total_appointments=total_appointments,
+                           active_users=active_users,
+                           twofa_users=twofa_users,
+                           today_appointments=today_appointments,
+                           upcoming_appointments=upcoming_appointments,
+                           recent_patients=recent_patients)
+
+
+@bp.route('/security')
+@login_required
+@role_required('admin')
+def security_dashboard():
     locked_users = User.query.filter(User.locked_until > datetime.utcnow()).count()
     suspicious_ips = SuspiciousIP.query.count()
     blocked_ips = SuspiciousIP.query.filter(
         SuspiciousIP.blocked_until > datetime.utcnow()
     ).count()
     twofa_users = User.query.filter_by(is_2fa_enabled=True).count()
+    total_users = User.query.count()
+    active_users = User.query.filter_by(is_active=True).count()
+    total_admins = User.query.filter_by(role='admin').count()
+    total_doctors = User.query.filter_by(role='doctor').count()
+    total_patients = User.query.filter_by(role='patient').count()
 
     last_24h = datetime.utcnow() - timedelta(hours=24)
+    last_7d = datetime.utcnow() - timedelta(days=7)
     failed_logins_24h = AuditLog.query.filter(
         AuditLog.action == 'LOGIN_FAILED',
         AuditLog.timestamp >= last_24h
     ).count()
+    failed_logins_7d = AuditLog.query.filter(
+        AuditLog.action == 'LOGIN_FAILED',
+        AuditLog.timestamp >= last_7d
+    ).count()
     total_events_24h = AuditLog.query.filter(
         AuditLog.timestamp >= last_24h
+    ).count()
+    total_events_7d = AuditLog.query.filter(
+        AuditLog.timestamp >= last_7d
     ).count()
 
     top_actions = db.session.query(
@@ -53,18 +98,29 @@ def dashboard():
         AuditLog.timestamp.desc()
     ).limit(10).all()
 
-    return render_template('admin/dashboard.html',
-                           total_users=total_users,
-                           total_patients=total_patients,
-                           total_doctors=total_doctors,
-                           total_appointments=total_appointments,
-                           active_users=active_users,
+    login_success_24h = AuditLog.query.filter(
+        AuditLog.action.in_(['LOGIN_SUCCESS', 'LOGIN_SUCCESS_2FA', 'LOGIN_SUCCESS_TRUSTED']),
+        AuditLog.timestamp >= last_24h
+    ).count()
+
+    active_sessions = UserSession.query.filter_by(is_active=True).count()
+
+    return render_template('admin/security.html',
                            locked_users=locked_users,
                            suspicious_ips=suspicious_ips,
                            blocked_ips=blocked_ips,
                            twofa_users=twofa_users,
+                           total_users=total_users,
+                           active_users=active_users,
+                           total_admins=total_admins,
+                           total_doctors=total_doctors,
+                           total_patients=total_patients,
                            failed_logins_24h=failed_logins_24h,
+                           failed_logins_7d=failed_logins_7d,
                            total_events_24h=total_events_24h,
+                           total_events_7d=total_events_7d,
+                           login_success_24h=login_success_24h,
+                           active_sessions=active_sessions,
                            top_actions=top_actions,
                            recent_suspicious=recent_suspicious,
                            recent_logs=recent_logs)

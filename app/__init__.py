@@ -67,7 +67,10 @@ def create_app(config_class=Config):
     @app.route('/')
     def index():
         from flask import render_template
-        return render_template('landing.html')
+        from app.models import User, Patient, Doctor, Appointment
+        return render_template('landing.html',
+                               User=User, Patient=Patient,
+                               Doctor=Doctor, Appointment=Appointment)
 
     @app.route('/.well-known/security.txt')
     def security_txt():
@@ -107,7 +110,7 @@ def create_app(config_class=Config):
 
     with app.app_context():
         db.create_all()
-        from app.models import User, Disease, Medication
+        from app.models import User, Patient, Doctor, Appointment, Disease, Medication
         from werkzeug.security import generate_password_hash
 
         if not User.query.filter_by(role='admin').first():
@@ -120,6 +123,239 @@ def create_app(config_class=Config):
             )
             db.session.add(admin_user)
             db.session.commit()
+
+        if not User.query.filter_by(role='doctor').first():
+            doctor_user = User(
+                username='dr.sari',
+                email='drsari@medsecure.com',
+                password_hash=generate_password_hash('Dokter123!'),
+                role='doctor',
+                is_active=True
+            )
+            db.session.add(doctor_user)
+            db.session.flush()
+            doctor_profile = Doctor(
+                user_id=doctor_user.id,
+                full_name='dr. Sari Dewi, Sp.PD',
+                specialization='Penyakit Dalam',
+                phone='081234567890',
+                available_days='Senin, Selasa, Rabu, Kamis, Jumat',
+                bio='Dokter spesialis penyakit dalam dengan pengalaman 10 tahun.'
+            )
+            db.session.add(doctor_profile)
+
+            doctor_user2 = User(
+                username='dr.budi',
+                email='drbudi@medsecure.com',
+                password_hash=generate_password_hash('Dokter123!'),
+                role='doctor',
+                is_active=True
+            )
+            db.session.add(doctor_user2)
+            db.session.flush()
+            doctor_profile2 = Doctor(
+                user_id=doctor_user2.id,
+                full_name='dr. Budi Santoso, Sp.A',
+                specialization='Pediatri (Anak)',
+                phone='081234567891',
+                available_days='Senin, Rabu, Jumat',
+                bio='Dokter spesialis anak yang ramah dan berpengalaman.'
+            )
+            db.session.add(doctor_profile2)
+
+            doctor_user3 = User(
+                username='dr.anita',
+                email='dranita@medsecure.com',
+                password_hash=generate_password_hash('Dokter123!'),
+                role='doctor',
+                is_active=True
+            )
+            db.session.add(doctor_user3)
+            db.session.flush()
+            doctor_profile3 = Doctor(
+                user_id=doctor_user3.id,
+                full_name='dr. Anita Putri, Sp.OG',
+                specialization='Obstetri & Ginekologi',
+                phone='081234567892',
+                available_days='Selasa, Kamis, Sabtu',
+                bio='Dokter spesialis kebidanan dan kandungan.'
+            )
+            db.session.add(doctor_profile3)
+
+        if not User.query.filter_by(role='patient').first():
+            patient_user = User(
+                username='rina',
+                email='rina@email.com',
+                password_hash=generate_password_hash('Pasien123!'),
+                role='patient',
+                is_active=True
+            )
+            db.session.add(patient_user)
+            db.session.flush()
+            patient_profile = Patient(
+                user_id=patient_user.id,
+                full_name='Rina Amelia',
+                date_of_birth=datetime(1995, 6, 15),
+                gender='female',
+                phone='081234567893',
+                address='Jl. Merdeka No. 45, Jakarta',
+                blood_type='O+',
+                allergies='Amoxicillin'
+            )
+            db.session.add(patient_profile)
+
+            patient_user2 = User(
+                username='bambang',
+                email='bambang@email.com',
+                password_hash=generate_password_hash('Pasien123!'),
+                role='patient',
+                is_active=True
+            )
+            db.session.add(patient_user2)
+            db.session.flush()
+            patient_profile2 = Patient(
+                user_id=patient_user2.id,
+                full_name='Bambang Suprapto',
+                date_of_birth=datetime(1988, 3, 22),
+                gender='male',
+                phone='081234567894',
+                address='Jl. Sudirman No. 88, Bandung',
+                blood_type='A+'
+            )
+            db.session.add(patient_profile2)
+
+            patient_user3 = User(
+                username='siti',
+                email='siti@email.com',
+                password_hash=generate_password_hash('Pasien123!'),
+                role='patient',
+                is_active=True
+            )
+            db.session.add(patient_user3)
+            db.session.flush()
+            patient_profile3 = Patient(
+                user_id=patient_user3.id,
+                full_name='Siti Rahmawati',
+                date_of_birth=datetime(2000, 11, 8),
+                gender='female',
+                phone='081234567895',
+                address='Jl. Diponegoro No. 12, Surabaya',
+                blood_type='B+',
+                allergies='Kacang-kacangan'
+            )
+            db.session.add(patient_profile3)
+            db.session.commit()
+
+        if not Appointment.query.first():
+            from datetime import time, date, timedelta
+            doctors = Doctor.query.all()
+            patients = Patient.query.all()
+            if doctors and patients:
+                tomorrow = date.today() + timedelta(days=1)
+                day_after = date.today() + timedelta(days=2)
+                appointments = [
+                    Appointment(
+                        patient_id=patients[0].id,
+                        doctor_id=doctors[0].id,
+                        appointment_date=tomorrow,
+                        appointment_time=time(9, 0),
+                        status='scheduled',
+                        reason='Kontrol rutin tekanan darah tinggi'
+                    ),
+                    Appointment(
+                        patient_id=patients[1].id,
+                        doctor_id=doctors[1].id,
+                        appointment_date=tomorrow,
+                        appointment_time=time(10, 30),
+                        status='scheduled',
+                        reason='Demam dan batuk sejak 3 hari'
+                    ),
+                    Appointment(
+                        patient_id=patients[2].id,
+                        doctor_id=doctors[2].id,
+                        appointment_date=day_after,
+                        appointment_time=time(14, 0),
+                        status='scheduled',
+                        reason='Pemeriksaan kehamilan rutin'
+                    ),
+                    Appointment(
+                        patient_id=patients[0].id,
+                        doctor_id=doctors[0].id,
+                        appointment_date=date.today(),
+                        appointment_time=time(8, 0),
+                        status='completed',
+                        reason='Cek lab rutin'
+                    ),
+                    Appointment(
+                        patient_id=patients[1].id,
+                        doctor_id=doctors[0].id,
+                        appointment_date=date.today() - timedelta(days=7),
+                        appointment_time=time(11, 0),
+                        status='completed',
+                        reason='Keluhan sakit kepala'
+                    ),
+                ]
+                db.session.add_all(appointments)
+                db.session.commit()
+
+            from app.models import VitalSign, LabResult
+            if patients and not VitalSign.query.first():
+                vitals = [
+                    VitalSign(
+                        patient_id=patients[0].id,
+                        blood_pressure_systolic=130,
+                        blood_pressure_diastolic=85,
+                        heart_rate=78,
+                        temperature=36.5,
+                        oxygen_saturation=98,
+                        weight_kg=65,
+                        height_cm=160,
+                        respiratory_rate=18,
+                    ),
+                    VitalSign(
+                        patient_id=patients[1].id,
+                        blood_pressure_systolic=120,
+                        blood_pressure_diastolic=80,
+                        heart_rate=88,
+                        temperature=38.2,
+                        oxygen_saturation=96,
+                        weight_kg=72,
+                        height_cm=170,
+                        respiratory_rate=22,
+                    ),
+                ]
+                db.session.add_all(vitals)
+                db.session.commit()
+
+            if patients and not LabResult.query.first():
+                labs = [
+                    LabResult(
+                        patient_id=patients[0].id,
+                        test_name='Hemoglobin',
+                        test_value='13.5',
+                        reference_range='12.0 - 16.0',
+                        unit='g/dL',
+                        is_abnormal=False
+                    ),
+                    LabResult(
+                        patient_id=patients[0].id,
+                        test_name='Gula Darah Puasa',
+                        test_value='145',
+                        reference_range='70 - 110',
+                        unit='mg/dL',
+                        is_abnormal=True
+                    ),
+                    LabResult(
+                        patient_id=patients[1].id,
+                        test_name='Hemoglobin',
+                        test_value='11.2',
+                        reference_range='12.0 - 16.0',
+                        unit='g/dL',
+                        is_abnormal=True
+                    ),
+                ]
+                db.session.add_all(labs)
+                db.session.commit()
 
         if not Disease.query.first():
             diseases = [
@@ -222,7 +458,9 @@ def create_app(config_class=Config):
         if current_user.is_authenticated:
             last_active = flask_session.get('last_active')
             now = datetime.utcnow()
-            if last_active:
+            if last_active and isinstance(last_active, datetime):
+                if last_active.tzinfo is not None:
+                    last_active = last_active.replace(tzinfo=None)
                 elapsed = (now - last_active).total_seconds()
                 if elapsed > 1800:
                     logout_user()

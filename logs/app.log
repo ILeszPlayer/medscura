@@ -506,3 +506,199 @@ Traceback (most recent call last):
     lambda form, field: validate_username(field)
                         ^^^^^^^^^^^^^^^^^
 NameError: name 'validate_username' is not defined
+2026-06-08 08:13:44,681 ERROR [app] app:875 - Exception on /static/css/style.css [GET]
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 915, in full_dispatch_request
+    rv = self.preprocess_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1291, in preprocess_request
+    rv = self.ensure_sync(before_func)()
+  File "C:\Itenas\Semester 6\IFB-302 Keamanan Jaringan\Code\WebAkhir\medsecure\app\__init__.py", line 226, in check_session_timeout
+    elapsed = (now - last_active).total_seconds()
+               ~~~~^~~~~~~~~~~~~
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2026-06-08 08:13:44,703 ERROR [app] app:875 - Exception on /static/js/main.js [GET]
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 915, in full_dispatch_request
+    rv = self.preprocess_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1291, in preprocess_request
+    rv = self.ensure_sync(before_func)()
+  File "C:\Itenas\Semester 6\IFB-302 Keamanan Jaringan\Code\WebAkhir\medsecure\app\__init__.py", line 226, in check_session_timeout
+    elapsed = (now - last_active).total_seconds()
+               ~~~~^~~~~~~~~~~~~
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2026-06-08 08:14:11,621 ERROR [app] app:875 - Exception on /admin/dashboard [GET]
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 915, in full_dispatch_request
+    rv = self.preprocess_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1291, in preprocess_request
+    rv = self.ensure_sync(before_func)()
+  File "C:\Itenas\Semester 6\IFB-302 Keamanan Jaringan\Code\WebAkhir\medsecure\app\__init__.py", line 226, in check_session_timeout
+    elapsed = (now - last_active).total_seconds()
+               ~~~~^~~~~~~~~~~~~
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2026-06-08 08:14:11,817 ERROR [app] app:875 - Exception on /static/css/style.css [GET]
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 915, in full_dispatch_request
+    rv = self.preprocess_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1291, in preprocess_request
+    rv = self.ensure_sync(before_func)()
+  File "C:\Itenas\Semester 6\IFB-302 Keamanan Jaringan\Code\WebAkhir\medsecure\app\__init__.py", line 226, in check_session_timeout
+    elapsed = (now - last_active).total_seconds()
+               ~~~~^~~~~~~~~~~~~
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2026-06-08 08:14:11,825 ERROR [app] app:875 - Exception on /static/js/main.js [GET]
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 915, in full_dispatch_request
+    rv = self.preprocess_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1291, in preprocess_request
+    rv = self.ensure_sync(before_func)()
+  File "C:\Itenas\Semester 6\IFB-302 Keamanan Jaringan\Code\WebAkhir\medsecure\app\__init__.py", line 226, in check_session_timeout
+    elapsed = (now - last_active).total_seconds()
+               ~~~~^~~~~~~~~~~~~
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2026-06-08 08:14:14,124 ERROR [app] app:875 - Exception on /admin/users [GET]
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 915, in full_dispatch_request
+    rv = self.preprocess_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1291, in preprocess_request
+    rv = self.ensure_sync(before_func)()
+  File "C:\Itenas\Semester 6\IFB-302 Keamanan Jaringan\Code\WebAkhir\medsecure\app\__init__.py", line 226, in check_session_timeout
+    elapsed = (now - last_active).total_seconds()
+               ~~~~^~~~~~~~~~~~~
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2026-06-08 08:14:14,459 ERROR [app] app:875 - Exception on /static/css/style.css [GET]
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 915, in full_dispatch_request
+    rv = self.preprocess_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1291, in preprocess_request
+    rv = self.ensure_sync(before_func)()
+  File "C:\Itenas\Semester 6\IFB-302 Keamanan Jaringan\Code\WebAkhir\medsecure\app\__init__.py", line 226, in check_session_timeout
+    elapsed = (now - last_active).total_seconds()
+               ~~~~^~~~~~~~~~~~~
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2026-06-08 08:14:14,461 ERROR [app] app:875 - Exception on /static/js/main.js [GET]
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 915, in full_dispatch_request
+    rv = self.preprocess_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1291, in preprocess_request
+    rv = self.ensure_sync(before_func)()
+  File "C:\Itenas\Semester 6\IFB-302 Keamanan Jaringan\Code\WebAkhir\medsecure\app\__init__.py", line 226, in check_session_timeout
+    elapsed = (now - last_active).total_seconds()
+               ~~~~^~~~~~~~~~~~~
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2026-06-08 08:14:15,631 ERROR [app] app:875 - Exception on /admin/logs [GET]
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 915, in full_dispatch_request
+    rv = self.preprocess_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1291, in preprocess_request
+    rv = self.ensure_sync(before_func)()
+  File "C:\Itenas\Semester 6\IFB-302 Keamanan Jaringan\Code\WebAkhir\medsecure\app\__init__.py", line 226, in check_session_timeout
+    elapsed = (now - last_active).total_seconds()
+               ~~~~^~~~~~~~~~~~~
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2026-06-08 08:14:15,954 ERROR [app] app:875 - Exception on /static/css/style.css [GET]
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 915, in full_dispatch_request
+    rv = self.preprocess_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1291, in preprocess_request
+    rv = self.ensure_sync(before_func)()
+  File "C:\Itenas\Semester 6\IFB-302 Keamanan Jaringan\Code\WebAkhir\medsecure\app\__init__.py", line 226, in check_session_timeout
+    elapsed = (now - last_active).total_seconds()
+               ~~~~^~~~~~~~~~~~~
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2026-06-08 08:14:15,962 ERROR [app] app:875 - Exception on /static/js/main.js [GET]
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 915, in full_dispatch_request
+    rv = self.preprocess_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1291, in preprocess_request
+    rv = self.ensure_sync(before_func)()
+  File "C:\Itenas\Semester 6\IFB-302 Keamanan Jaringan\Code\WebAkhir\medsecure\app\__init__.py", line 226, in check_session_timeout
+    elapsed = (now - last_active).total_seconds()
+               ~~~~^~~~~~~~~~~~~
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2026-06-08 08:14:16,756 ERROR [app] app:875 - Exception on /admin/suspicious-ips [GET]
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 915, in full_dispatch_request
+    rv = self.preprocess_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1291, in preprocess_request
+    rv = self.ensure_sync(before_func)()
+  File "C:\Itenas\Semester 6\IFB-302 Keamanan Jaringan\Code\WebAkhir\medsecure\app\__init__.py", line 226, in check_session_timeout
+    elapsed = (now - last_active).total_seconds()
+               ~~~~^~~~~~~~~~~~~
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2026-06-08 08:14:17,161 ERROR [app] app:875 - Exception on /static/js/main.js [GET]
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 915, in full_dispatch_request
+    rv = self.preprocess_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1291, in preprocess_request
+    rv = self.ensure_sync(before_func)()
+  File "C:\Itenas\Semester 6\IFB-302 Keamanan Jaringan\Code\WebAkhir\medsecure\app\__init__.py", line 226, in check_session_timeout
+    elapsed = (now - last_active).total_seconds()
+               ~~~~^~~~~~~~~~~~~
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2026-06-08 08:14:17,169 ERROR [app] app:875 - Exception on /static/css/style.css [GET]
+Traceback (most recent call last):
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 915, in full_dispatch_request
+    rv = self.preprocess_request()
+  File "C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1291, in preprocess_request
+    rv = self.ensure_sync(before_func)()
+  File "C:\Itenas\Semester 6\IFB-302 Keamanan Jaringan\Code\WebAkhir\medsecure\app\__init__.py", line 226, in check_session_timeout
+    elapsed = (now - last_active).total_seconds()
+               ~~~~^~~~~~~~~~~~~
+TypeError: can't subtract offset-naive and offset-aware datetimes

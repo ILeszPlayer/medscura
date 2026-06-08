@@ -13,12 +13,10 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[
-        DataRequired(), Length(min=3, max=80),
-        lambda form, field: validate_username(field)
+        DataRequired(), Length(min=3, max=80)
     ])
     email = StringField('Email', validators=[
-        DataRequired(), Email(), Length(max=120),
-        lambda form, field: validate_email(field)
+        DataRequired(), Email(), Length(max=120)
     ])
     password = PasswordField('Password', validators=[
         DataRequired(),

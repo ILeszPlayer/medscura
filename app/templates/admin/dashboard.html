@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Admin Dashboard{% endblock %}
 {% block content %}
-<h3 class="mb-4"><i class="fas fa-shield-alt text-primary me-2"></i>Security Dashboard</h3>
+<h3 class="mb-4"><i class="fas fa-tachometer-alt text-primary me-2"></i>Admin Dashboard</h3>
 
 <div class="row mb-4">
     <div class="col-md-3 mb-3">
@@ -44,73 +44,54 @@
 
 <div class="row mb-4">
     <div class="col-md-4 mb-3">
-        <div class="card border-danger shadow h-100">
-            <div class="card-header bg-danger text-white">
-                <i class="fas fa-exclamation-triangle me-1"></i>Security Threats
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 text-primary"><i class="fas fa-info-circle me-2 text-primary"></i>System Overview</h5>
             </div>
             <div class="card-body">
                 <div class="d-flex justify-content-between mb-2">
-                    <span>Locked Accounts</span>
-                    <span class="badge bg-danger rounded-pill">{{ locked_users }}</span>
-                </div>
-                <div class="d-flex justify-content-between mb-2">
-                    <span>Suspicious IPs</span>
-                    <span class="badge bg-warning rounded-pill">{{ suspicious_ips }}</span>
-                </div>
-                <div class="d-flex justify-content-between mb-2">
-                    <span>Blocked IPs</span>
-                    <span class="badge bg-dark rounded-pill">{{ blocked_ips }}</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span>Failed Logins (24h)</span>
-                    <span class="badge bg-danger rounded-pill">{{ failed_logins_24h }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 mb-3">
-        <div class="card border-success shadow h-100">
-            <div class="card-header bg-success text-white">
-                <i class="fas fa-check-circle me-1"></i>Security Posture
-            </div>
-            <div class="card-body">
-                <div class="d-flex justify-content-between mb-2">
-                    <span>Active Users</span>
+                    <span><i class="fas fa-user-check text-success me-1"></i> Active Users</span>
                     <span class="badge bg-success rounded-pill">{{ active_users }}</span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
-                    <span>2FA Enabled</span>
+                    <span><i class="fas fa-shield-alt text-info me-1"></i> 2FA Enabled</span>
                     <span class="badge bg-info rounded-pill">{{ twofa_users }}</span>
                 </div>
-                <div class="d-flex justify-content-between mb-2">
-                    <span>Total Events (24h)</span>
-                    <span class="badge bg-secondary rounded-pill">{{ total_events_24h }}</span>
-                </div>
                 <div class="d-flex justify-content-between">
-                    <span>2FA Adoption Rate</span>
-                    <span class="badge bg-primary rounded-pill">
-                        {% if total_users > 0 %}{{ (twofa_users / total_users * 100) | int }}%{% else %}0%{% endif %}
-                    </span>
+                    <span><i class="fas fa-calendar-day text-warning me-1"></i> Appointments Today</span>
+                    <span class="badge bg-warning rounded-pill">{{ today_appointments }}</span>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-4 mb-3">
-        <div class="card border-info shadow h-100">
-            <div class="card-header bg-info text-white">
-                <i class="fas fa-chart-bar me-1"></i>Top Actions (24h)
+    <div class="col-md-8 mb-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-link me-2 text-primary"></i>Quick Actions</h5>
             </div>
             <div class="card-body">
-                {% if top_actions %}
-                {% for action in top_actions %}
-                <div class="d-flex justify-content-between mb-1">
-                    <span class="small">{{ action.action }}</span>
-                    <span class="badge bg-secondary rounded-pill">{{ action.count }}</span>
+                <div class="row text-center">
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('admin.list_users') }}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-users-cog me-1"></i> Manage Users
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('admin.list_appointments') }}" class="btn btn-outline-success w-100">
+                            <i class="fas fa-calendar-check me-1"></i> Appointments
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('admin.view_logs') }}" class="btn btn-outline-info w-100">
+                            <i class="fas fa-history me-1"></i> Audit Logs
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('admin.security_dashboard') }}" class="btn btn-outline-danger w-100">
+                            <i class="fas fa-shield-alt me-1"></i> Security
+                        </a>
+                    </div>
                 </div>
-                {% endfor %}
-                {% else %}
-                <p class="text-muted small text-center py-3">No events in last 24h</p>
-                {% endif %}
             </div>
         </div>
     </div>
@@ -118,28 +99,29 @@
 
 <div class="row mb-4">
     <div class="col-md-6">
-        <div class="card shadow-sm border-danger">
+        <div class="card shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 text-danger"><i class="fas fa-exclamation-circle me-2"></i>Recent Suspicious IPs</h5>
-                <a href="{{ url_for('admin.list_suspicious_ips') }}" class="btn btn-sm btn-outline-danger">View All</a>
+                <h5 class="mb-0 text-success"><i class="fas fa-calendar-week me-2 text-success"></i>Upcoming Appointments</h5>
+                <a href="{{ url_for('admin.list_appointments') }}" class="btn btn-sm btn-outline-success">View All</a>
             </div>
             <div class="card-body p-0">
-                {% if recent_suspicious %}
+                {% if upcoming_appointments %}
                 <div class="list-group list-group-flush">
-                    {% for ip in recent_suspicious %}
-                    <div class="list-group-item d-flex justify-content-between align-items-center py-2">
-                        <div>
-                            <code class="small">{{ ip.ip_address }}</code>
-                            <small class="text-muted ms-2">{{ ip.reason[:50] }}</small>
+                    {% for apt in upcoming_appointments %}
+                    <div class="list-group-item py-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ apt.patient.full_name }}</strong>
+                                <small class="text-muted"> with {{ apt.doctor.full_name }}</small>
+                            </div>
+                            <small class="text-muted">{{ apt.appointment_date.strftime('%d %b %Y') }} {{ apt.appointment_time.strftime('%H:%M') }}</small>
                         </div>
-                        <span class="badge bg-{% if ip.attempt_count >= 10 %}danger{% elif ip.attempt_count >= 5 %}warning{% else %}secondary{% endif %} rounded-pill">
-                            {{ ip.attempt_count }}x
-                        </span>
+                        <small class="text-muted">{{ apt.reason[:60] }}{% if apt.reason and apt.reason|length > 60 %}...{% endif %}</small>
                     </div>
                     {% endfor %}
                 </div>
                 {% else %}
-                <p class="text-muted text-center py-3">No suspicious IPs</p>
+                <p class="text-muted text-center py-3">No upcoming appointments</p>
                 {% endif %}
             </div>
         </div>
@@ -147,62 +129,35 @@
     <div class="col-md-6">
         <div class="card shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Audit Logs</h5>
-                <a href="{{ url_for('admin.view_logs') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                <h5 class="mb-0 text-info"><i class="fas fa-user-plus me-2 text-info"></i>Recent Patients</h5>
             </div>
             <div class="card-body p-0">
-                {% if recent_logs %}
+                {% if recent_patients %}
                 <div class="list-group list-group-flush">
-                    {% for log in recent_logs %}
+                    {% for p in recent_patients %}
                     <div class="list-group-item py-2">
-                        <div class="d-flex justify-content-between">
-                            <span class="badge bg-secondary">{{ log.action }}</span>
-                            <small class="text-muted">{{ log.timestamp.strftime('%H:%M:%S') }}</small>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-user-circle me-1 text-primary"></i>
+                                <strong>{{ p.full_name }}</strong>
+                                {% if p.blood_type %}
+                                <span class="badge bg-danger ms-1">{{ p.blood_type }}</span>
+                                {% endif %}
+                            </div>
+                            <small class="text-muted">{{ p.created_at.strftime('%d %b %Y') }}</small>
                         </div>
-                        <small class="text-muted">{{ log.details[:100] }}{% if log.details|length > 100 %}...{% endif %}</small>
-                        {% if log.ip_address %}
-                        <br><code class="small">{{ log.ip_address }}</code>
+                        {% if p.gender or p.phone %}
+                        <small class="text-muted ms-3">
+                            {% if p.gender %}{{ p.gender|capitalize }}{% endif %}
+                            {% if p.phone %} &middot; {{ p.phone }}{% endif %}
+                        </small>
                         {% endif %}
                     </div>
                     {% endfor %}
                 </div>
                 {% else %}
-                <p class="text-muted text-center py-3">No audit logs yet</p>
+                <p class="text-muted text-center py-3">No patients registered yet</p>
                 {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="card shadow-sm border-primary">
-    <div class="card-header bg-primary text-white">
-        <i class="fas fa-info-circle me-1"></i>Security Features Status
-    </div>
-    <div class="card-body">
-        <div class="row text-center">
-            <div class="col-md-3 mb-2">
-                <span class="badge bg-success fs-6 p-2"><i class="fas fa-check me-1"></i>CSRF Protection</span>
-            </div>
-            <div class="col-md-3 mb-2">
-                <span class="badge bg-success fs-6 p-2"><i class="fas fa-check me-1"></i>SQLi Prevention (ORM)</span>
-            </div>
-            <div class="col-md-3 mb-2">
-                <span class="badge bg-success fs-6 p-2"><i class="fas fa-check me-1"></i>XSS Sanitization</span>
-            </div>
-            <div class="col-md-3 mb-2">
-                <span class="badge bg-success fs-6 p-2"><i class="fas fa-check me-1"></i>Rate Limiting</span>
-            </div>
-            <div class="col-md-3 mb-2">
-                <span class="badge bg-success fs-6 p-2"><i class="fas fa-check me-1"></i>2FA Authentication</span>
-            </div>
-            <div class="col-md-3 mb-2">
-                <span class="badge bg-success fs-6 p-2"><i class="fas fa-check me-1"></i>Account Lockout</span>
-            </div>
-            <div class="col-md-3 mb-2">
-                <span class="badge bg-success fs-6 p-2"><i class="fas fa-check me-1"></i>AES-256 Encryption</span>
-            </div>
-            <div class="col-md-3 mb-2">
-                <span class="badge bg-success fs-6 p-2"><i class="fas fa-check me-1"></i>Audit Logging</span>
             </div>
         </div>
     </div>

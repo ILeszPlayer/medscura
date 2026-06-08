@@ -1,0 +1,383 @@
+{% extends "base.html" %}
+{% block title %}Security Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0"><i class="fas fa-shield-alt text-danger me-2"></i>Security Dashboard</h3>
+    <div>
+        <span class="badge bg-success fs-6 px-3 py-2"><i class="fas fa-check-circle me-1"></i> All Systems Active</span>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card security-metric-card bg-danger text-white shadow">
+            <div class="card-body">
+                <i class="fas fa-lock metric-icon"></i>
+                <div class="metric-value">{{ locked_users }}</div>
+                <div class="metric-label">Locked Accounts</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card security-metric-card bg-warning text-white shadow">
+            <div class="card-body">
+                <i class="fas fa-flag metric-icon"></i>
+                <div class="metric-value">{{ suspicious_ips }}</div>
+                <div class="metric-label">Suspicious IPs</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card security-metric-card bg-dark text-white shadow">
+            <div class="card-body">
+                <i class="fas fa-ban metric-icon"></i>
+                <div class="metric-value">{{ blocked_ips }}</div>
+                <div class="metric-label">Blocked IPs</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card security-metric-card bg-secondary text-white shadow">
+            <div class="card-body">
+                <i class="fas fa-times-circle metric-icon"></i>
+                <div class="metric-value">{{ failed_logins_24h }}</div>
+                <div class="metric-label">Failed Logins (24h)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-lg-8 mb-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-activity text-primary me-2"></i>Security Activity Overview</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3"><i class="fas fa-calendar-day me-1"></i> Last 24 Hours</h6>
+                        <div class="d-flex justify-content-between mb-2 p-2 bg-light rounded">
+                            <span><i class="fas fa-sign-in-alt text-success me-1"></i> Successful Logins</span>
+                            <span class="badge bg-success rounded-pill">{{ login_success_24h }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 p-2 bg-light rounded">
+                            <span><i class="fas fa-times-circle text-danger me-1"></i> Failed Logins</span>
+                            <span class="badge bg-danger rounded-pill">{{ failed_logins_24h }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 p-2 bg-light rounded">
+                            <span><i class="fas fa-chart-bar text-info me-1"></i> Total Events</span>
+                            <span class="badge bg-info rounded-pill">{{ total_events_24h }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between p-2 bg-light rounded">
+                            <span><i class="fas fa-plug text-warning me-1"></i> Active Sessions</span>
+                            <span class="badge bg-warning rounded-pill">{{ active_sessions }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3"><i class="fas fa-calendar-week me-1"></i> Last 7 Days</h6>
+                        <div class="d-flex justify-content-between mb-2 p-2 bg-light rounded">
+                            <span><i class="fas fa-times-circle text-danger me-1"></i> Failed Logins</span>
+                            <span class="badge bg-danger rounded-pill">{{ failed_logins_7d }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 p-2 bg-light rounded">
+                            <span><i class="fas fa-chart-bar text-info me-1"></i> Total Events</span>
+                            <span class="badge bg-info rounded-pill">{{ total_events_7d }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between p-2 bg-light rounded">
+                            <span><i class="fas fa-shield-alt text-primary me-1"></i> 2FA Users</span>
+                            <span class="badge bg-primary rounded-pill">{{ twofa_users }} / {{ total_users }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 mb-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-users text-primary me-2"></i>User Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2 p-2 bg-light rounded">
+                    <span><i class="fas fa-user-shield text-primary me-1"></i> Administrators</span>
+                    <span class="badge bg-primary rounded-pill">{{ total_admins }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 p-2 bg-light rounded">
+                    <span><i class="fas fa-user-md text-success me-1"></i> Doctors</span>
+                    <span class="badge bg-success rounded-pill">{{ total_doctors }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 p-2 bg-light rounded">
+                    <span><i class="fas fa-user-injured text-info me-1"></i> Patients</span>
+                    <span class="badge bg-info rounded-pill">{{ total_patients }}</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between p-2 bg-light rounded">
+                    <span><i class="fas fa-user-check text-success me-1"></i> Active Users</span>
+                    <span class="badge bg-success rounded-pill">{{ active_users }} / {{ total_users }}</span>
+                </div>
+                <div class="mt-3">
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-primary" style="width: {{ (total_admins / total_users * 100) if total_users > 0 else 0 }}%"></div>
+                        <div class="progress-bar bg-success" style="width: {{ (total_doctors / total_users * 100) if total_users > 0 else 0 }}%"></div>
+                        <div class="progress-bar bg-info" style="width: {{ (total_patients / total_users * 100) if total_users > 0 else 0 }}%"></div>
+                    </div>
+                    <div class="d-flex justify-content-center mt-2 small text-muted">
+                        <span class="me-3"><i class="fas fa-circle text-primary me-1"></i>Admin</span>
+                        <span class="me-3"><i class="fas fa-circle text-success me-1"></i>Doctor</span>
+                        <span><i class="fas fa-circle text-info me-1"></i>Patient</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-danger h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-danger"><i class="fas fa-exclamation-circle me-2"></i>Recent Suspicious IPs</h5>
+                <a href="{{ url_for('admin.list_suspicious_ips') }}" class="btn btn-sm btn-outline-danger">View All</a>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_suspicious %}
+                <div class="list-group list-group-flush">
+                    {% for ip in recent_suspicious %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                        <div>
+                            <code class="small">{{ ip.ip_address }}</code>
+                            <small class="text-muted ms-2">{{ ip.reason[:60] }}</small>
+                        </div>
+                        <span class="badge bg-{% if ip.attempt_count >= 10 %}danger{% elif ip.attempt_count >= 5 %}warning{% else %}secondary{% endif %} rounded-pill">
+                            {{ ip.attempt_count }}x
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="fas fa-shield-alt fa-3x mb-3 opacity-25"></i>
+                    <p class="mb-0">No suspicious IPs detected</p>
+                    <small>All clear — no threats detected</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Audit Logs</h5>
+                <a href="{{ url_for('admin.view_logs') }}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_logs %}
+                <div class="list-group list-group-flush">
+                    {% for log in recent_logs %}
+                    <div class="list-group-item py-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="badge bg-{% if 'FAILED' in log.action or 'BLOCKED' in log.action %}danger{% elif 'SUCCESS' in log.action %}success{% else %}secondary{% endif %}">
+                                {{ log.action }}
+                            </span>
+                            <small class="text-muted">{{ log.timestamp.strftime('%H:%M:%S') }}</small>
+                        </div>
+                        <small class="text-muted">{{ log.details[:120] }}{% if log.details|length > 120 %}...{% endif %}</small>
+                        {% if log.ip_address %}
+                        <br><code class="small">{{ log.ip_address }}</code>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="fas fa-clipboard-list fa-3x mb-3 opacity-25"></i>
+                    <p class="mb-0">No audit logs yet</p>
+                    <small>Activity will appear here</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-chart-bar text-info me-2"></i>Top Actions (24h)</h5>
+            </div>
+            <div class="card-body">
+                {% if top_actions %}
+                {% for action in top_actions %}
+                <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
+                    <span class="small fw-medium">{{ action.action }}</span>
+                    <span class="badge bg-secondary rounded-pill">{{ action.count }}</span>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="text-muted text-center py-3">No events in last 24h</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-check-circle text-success me-2"></i>Security Controls Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="sec-feature-badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                            <i class="fas fa-shield-alt me-1"></i> CSRF Protection
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="sec-feature-badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                            <i class="fas fa-database me-1"></i> SQLi Prevention
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="sec-feature-badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                            <i class="fas fa-code me-1"></i> XSS Sanitization
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="sec-feature-badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                            <i class="fas fa-tachometer-alt me-1"></i> Rate Limiting
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="sec-feature-badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                            <i class="fas fa-mobile-alt me-1"></i> 2FA Authentication
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="sec-feature-badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                            <i class="fas fa-lock me-1"></i> Account Lockout
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="sec-feature-badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                            <i class="fas fa-key me-1"></i> AES-256 Encryption
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="sec-feature-badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                            <i class="fas fa-clipboard-list me-1"></i> Audit Logging
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="sec-feature-badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                            <i class="fas fa-cookie me-1"></i> Secure Session
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="sec-feature-badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                            <i class="fas fa-file-medical me-1"></i> File Upload Validation
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-primary">
+    <div class="card-header bg-primary text-white">
+        <div class="d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-info-circle me-1"></i>Feature Details</span>
+            <span class="badge bg-white text-primary">All Active</span>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Feature</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><i class="fas fa-shield-alt text-success me-2"></i>CSRF Protection</td>
+                        <td>Application Security</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><small>Flask-WTF CSRF token on all forms</small></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-database text-success me-2"></i>SQLi Prevention</td>
+                        <td>Application Security</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><small>SQLAlchemy ORM with parameterized queries</small></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-code text-success me-2"></i>XSS Sanitization</td>
+                        <td>Application Security</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><small>Bleach + Jinja2 autoescaping</small></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-tachometer-alt text-success me-2"></i>Rate Limiting</td>
+                        <td>Infrastructure</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><small>10/min login, 3/min register, 5/min reset</small></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-mobile-alt text-success me-2"></i>TOTP 2FA</td>
+                        <td>Authentication</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><small>Google Authenticator with trusted device support</small></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-lock text-success me-2"></i>Account Lockout</td>
+                        <td>Authentication</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><small>5 failed attempts = 15 min lockout</small></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-key text-success me-2"></i>AES-256 Encryption</td>
+                        <td>Data Protection</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><small>All uploaded medical files encrypted at rest</small></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-clipboard-list text-success me-2"></i>Audit Logging</td>
+                        <td>Monitoring</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><small>All events logged with IP, user-agent, timestamp</small></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-cookie text-success me-2"></i>Secure Sessions</td>
+                        <td>Session Management</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><small>HttpOnly cookies, 30 min timeout, IP tracking</small></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-file-medical text-success me-2"></i>File Upload Validation</td>
+                        <td>Application Security</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><small>MIME validation, encrypted storage, access control</small></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-ban text-success me-2"></i>Suspicious IP Blocking</td>
+                        <td>Infrastructure</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><small>Auto-block IPs with excessive failed attempts</small></td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-sync-alt text-success me-2"></i>Password Rotation</td>
+                        <td>Authentication</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><small>Password expires every 90 days</small></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

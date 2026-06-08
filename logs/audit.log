@@ -7,3 +7,7 @@
 2026-06-07 21:31:03,843 | INFO | anonymous | LOGIN_FAILED | Invalid username/email: testpatient | 127.0.0.1
 2026-06-07 21:32:31,931 | INFO | 1 | LOGIN_SUCCESS | User admin logged in | 127.0.0.1
 2026-06-07 21:33:02,954 | INFO | anonymous | LOGIN_FAILED | Invalid username/email: neil | 127.0.0.1
+2026-06-08 08:13:43,896 | INFO | 1 | LOGIN_SUCCESS | User admin logged in | 192.168.1.71
+2026-06-08 08:26:41,732 | INFO | 1 | LOGIN_SUCCESS | User admin logged in | 192.168.1.71
+2026-06-08 08:39:56,380 | INFO | 1 | LOGOUT | User admin logged out | 192.168.1.71
+2026-06-08 08:44:42,577 | INFO | 1 | LOGIN_SUCCESS | User admin logged in | 127.0.0.1
